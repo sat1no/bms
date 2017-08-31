@@ -1,0 +1,50 @@
+<!doctype html>
+
+      {% extends 'layout.html' %}   
+      {% block body %}
+
+
+         <table class="table table-striped table-bordered table-sm table-responsive">
+            <thead class="thead-inverse">
+               <tr>
+                  <th>Address</th>
+                  <th>Name</th>
+<!--                  <th>value1</th>
+                  <th>value2</th>
+                  <th>value3</th>-->
+               </tr>
+            </thead>
+            
+            <tbody>
+               {% for modul in Moduly %}
+                  <tr>
+                     <td>{{ modul.id }}</td>
+
+                     <td>{{ modul.name }}</td>
+
+  <!--                   <td>{{ modul.value1 }}</td>
+
+                     <td>{{ modul.value2 }}</td>
+
+                     <td>{{ modul.value3 }}</td>
+
+
+                     <td><form action="/editrec" method="POST">
+                     <input type="hidden" name="id" value ="{{ modul.id }}">
+                     <input type="submit" class="btn btn-info btn-block" value ="Edit" />
+                     </form></td>
+                  </tr>-->
+                     
+                  
+               {% endfor %}
+            </tbody>
+         </table>
+
+         <br>
+         <center>
+        <a href="/addrec">
+           <button class="btn btn-info btn-block">Dodaj modul</button>
+        </a>
+         </center>
+      {% endblock %}
+

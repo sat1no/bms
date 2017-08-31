@@ -1,0 +1,37 @@
+<!doctype html>
+
+		{% extends "layout.html" %}
+		{% block body %}
+      <h2 style = "text-align: center;">Edytuj modul</h2>
+      
+      
+				<form action = '/save' method = post>
+         <fieldset>
+            <legend>Edytuj modul</legend>
+            {{ form.hidden_tag() }}
+<!--					<label for = "name">Name</label><br>
+					<input type = "text" name = "name" placeholder = "nazwa" /><br>
+					<label for = "value1">value1</label><br>
+					<input type = "number" name = "value1" placeholder = "wartosc1" /><br>
+					<label for = "value2">value2</label><br>
+					<input type = "number" name= "value2" placeholder = "wartosc2"><br>
+					<label for = "value3">value3</label><br>
+					<input type = "number" name= "value3" placeholder = "wartosc3"><br><br>
+					<input type = "submit" value = "Dodaj" />-->
+
+					<label for = "name">Name</label><br>
+										{{ form.name }}<br>
+                    
+					<label for = "value1">value1</label><br>
+										{{ form.value1 }}<br>
+                    <input type="hidden" name="address" value="{{ edit.id }}">
+					<label for = "value1">value1</label><br>
+										{{ form.value2 }}<br>
+					<label for = "value1">value1</label><br>
+										{{ form.value3 }}<br>
+					<input type = "submit" value = "Edytuj" />
+				</form>
+            
+         </fieldset>
+      </form>
+		{% endblock %}
