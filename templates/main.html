@@ -2,21 +2,55 @@
 
 {% block body %}
 
+
+
+
+
+
+
+
+<p>Link INPUT elements:
+<button class="jscolor
+    {valueElement:'valueInput', styleElement:'styleInput'}">
+    Click here to pick a color
+</button>
+
+<p>
+<input id="valueInput" value="ff6699" hidden='true'>
+<br>
+
+<button id="styleInput" hidden='true'>zmień</button>
+
+
 {% for modul in Moduly %}
 <div class="card border-success mb-3" style="max-width: 40rem;">
-  <div class="card-header">{{ modul.name }}</div>
+  <div class="card-header">{{ modul.name }}<a class='btn btn-light float-right' id='dodaj{{ modul.id }}'>+</a></div>
   <div class="card-body text-success">
     <h5 class="card-title">
-      <form action = '/' method= 'POST'>
-        <input type='submit' value='Dodaj urzadzenie' />
-      </form></h5>
-    <p class="card-text">
+
+    <p class="card-text" id='text{{ modul.id }}'>
+      
 
     </p>
   </div>
 </div>
-{% endfor %}
+</h5>
+<form action = '/' method= 'POST' id='post{{ modul.id }}'>
+<input type='text' name='liczba_modulow' id='liczba_modulow' hidden='true' value='{{ liczba_modulow }}'>
 
+<input type='text' name='nazwa_modul' id='id_modul{{ modul.id }}' hidden='true' value='{{ modul.id }}'>
+<input type='text' name='nazwa' id='nazwa{{ modul.id }}' placeholder='nazwa' style="display: none">
+<input type='text' name='rejestr' id='rejestr{{ modul.id }}' placeholder='rejestr' style="display: none">
+<select id='sterowanie{{ modul.id }}' style="display: none">
+  <option value='on/off'>ON/OFF</option>
+  <option value='0-100%'>0-100%</option>
+  <option value='RGB'>RGB</option>
+  <option value='tylko do oczytu'>Tylko do odczytu</option>
+</select>
+<input type='submit' value='Dodaj urzadzenie' style="display: none" id='submit{{ modul.id }}'/>
+</form>
+
+{% endfor %}
 
 
 <!--    <div class="card border-success mb-3" style="max-width: 40rem;">
@@ -48,4 +82,10 @@
            <button class="btn btn-info">Dodaj modul</button>
         </a>
          </center>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/EYE.js')}}"></script>
+<script src="{{ url_for('static', filename='js/utils.js')}}"></script>
+<script src="{{url_for('static', filename='hello.js')}}"></script>
+
 {% endblock %}

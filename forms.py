@@ -30,11 +30,19 @@ class LoginForm(Form):
     openid = TextField('openid', validators=[validators.DataRequired()])
     remember_me = BooleanField('remember_me', default=False)
    
+   
+class UrzadzeniaForm(Form):
+   name = TextField('nazwa', validators=[validators.DataRequired()])
+   rejestr = IntegerField('rejestr')
+   sterowanie = SelectField('sterowanie', choices = ['on/off','0-100%','RGB','Tylko do odczytu'])
+   wartosc = IntegerField('wartosc')
+   wartosc2 =IntegerField('wartosc2')
+   wartosc3 =IntegerField('wartosc3')
+
 class NewModuleForm(Form):
    name = TextField('name', validators=[validators.DataRequired()])
    value1 = IntegerField('value1', validators=[validators.DataRequired()])
-   value2 = IntegerField('value2', validators=[validators.Optional()])
-   value3 = IntegerField('value3', validators=[validators.Optional()])
+
    
    def validate_name(form, field):
       if len(field.data) < 4:

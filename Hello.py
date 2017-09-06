@@ -1,10 +1,10 @@
 from flask import   Flask, redirect, g, url_for, flash, \
-                    request, render_template, make_response, session, abort, jsonify
+                    request, render_template, make_response, session, abort, jsonify, Response
 import random, string, sqlite3, os, wtforms
 from werkzeug import secure_filename
-from forms import ContactForm, LoginForm, NewModuleForm
+from forms import ContactForm, LoginForm, NewModuleForm, UrzadzeniaForm
 import flask_sijax
-from models import Moduly, Nowe
+from models import Moduly, Urzadzenia
 from __init__ import app, db
 
 
@@ -28,21 +28,64 @@ flask_sijax.Sijax(app)
 #    
 
 
-def prepare_for_json(item):
+def prepare_for_json(modul):
     nowy = dict()
-    nowy['name']=item.name
-    nowy['value1']=item.value1
+    nowy['name']=modul.name
+    nowy['value1']=modul.value1
+    nowy['urzadzenia']=[]
+    for i in range(len(modul.urzadzenia.all())):
+        nowy['urzadzenia'].append(modul.urzadzenia.all()[i].name)
+        nowy['urzadzenia'].append(modul.urzadzenia.all()[i].rejestr)
+        nowy['urzadzenia'].append(modul.urzadzenia.all()[i].sterowanie)
+        nowy['urzadzenia'].append(modul.urzadzenia.all()[i].wartosc)
+        nowy['urzadzenia'].append(modul.urzadzenia.all()[i].r)
+        nowy['urzadzenia'].append(modul.urzadzenia.all()[i].g)
+        nowy['urzadzenia'].append(modul.urzadzenia.all()[i].b)    
+    return nowy
+
+def prepare_for_json3(_modul):
+    modul = dict()
+    _urzadzenia = dict()
+    for i in range(len(_modul.urzadzenia.all())):
+        _urzadzenia['%s' %i] = {
+            
+            'name': _modul.urzadzenia.all()[i].name,
+            'rejestr': _modul.urzadzenia.all()[i].rejestr,
+            'sterowanie': _modul.urzadzenia.all()[i].sterowanie,
+            'wartosc': _modul.urzadzenia.all()[i].wartosc,
+            'r': _modul.urzadzenia.all()[i].r,
+            'g': _modul.urzadzenia.all()[i].g,
+            'b': _modul.urzadzenia.all()[i].b
+            
+            
+        }
+            
+
+            
+        
+    modul['name']= _modul.name
+    modul['value1']= _modul.value1
+    modul['urzadzenia'] = _urzadzenia
+    modul['id'] = _modul.id
+    
+    return modul
+
+def prepare_for_json2(urzadzenia):
+    nowy = dict()
+    nowy['name']=urzadzenia.name
+    nowy['rejestr']=urzadzenia.rejestr
     return nowy
 #########################################################################################
         ###########################INDEX#####################################
 #########################################################################################
         
 
-@app.route('/')
+@app.route('/', methods=['GET','POST'])
 def index():
     # if 'username' in session:
     #     username = session['username']
-    return render_template('main.html', Moduly = Moduly.query.all())
+    liczba_modulow = len(Moduly.query.all())
+    return render_template('main.html', Moduly = Moduly.query.all(), Urzadzenia = Urzadzenia.query.all(),liczba_modulow = liczba_modulow)
     # return redirect(url_for('login'))
 
 
@@ -96,8 +139,7 @@ def addrec():
     if request.method == 'POST':    ## Po kliknieciu submit w newmodule.html
         if form.validate_on_submit(): ## warunki w forms.py
 
-            modul = Moduly(request.form['name'],request.form['value1'],\
-                           request.form['value2'],request.form['value3']) ## Nowa instancja klasy Moduly
+            modul = Moduly(name=request.form['name'],value1=request.form['value1']) ## Nowa instancja klasy Moduly
                                                                           ## zainicjowana przy uzyciu danych z
                                                                           ## formularza newmodule.html
             
@@ -216,17 +258,68 @@ def details(address):
     modul = Moduly.query.filter_by(id = address).first()
     return render_template('main.html', Moduly = Moduly.query.all())
 
-@app.route('/getnowe', methods = ['GET'])
-def getnowe():
-    
-    nowe = []
-    wszystkieNowe = Moduly.query.all()
-    for nowy in wszystkieNowe:
-        item = prepare_for_json(nowy)
-        nowe.append(item)
-        print(nowy)
+@app.route('/moduly', methods = ['GET'])
+def moduly_get():
+
+    moduly = []
+
+    all_modules = Moduly.query.all()
+    for modul in all_modules:
         
-    return jsonify({'nowe': nowe})
+        item = prepare_for_json3(modul)
+        moduly.append(item)
+        
+        print(modul)
+        
+    
+       
+    return jsonify({'moduly': moduly})
+
+
+
+
+@app.route('/moduly', methods = ['POST'])
+def moduly_post():
+    
+    zadanie = request.json
+    print(zadanie)
+    
+    if ('nazwa' in zadanie): 
+        urzadzenie = Urzadzenia()
+        urzadzenie.name = request.json['nazwa']
+        urzadzenie.rejestr = request.json['rejestr']
+        urzadzenie.modul_id = request.json['id_modul']
+        urzadzenie.sterowanie = request.json['sterowanie']
+        
+        db.session.add(urzadzenie)
+        db.session.commit()
+    elif ('r' in zadanie):
+        urzadzenie = Urzadzenia.query.filter_by(modul_id = request.json['modul_id']).first()
+        urzadzenie.r = request.json['r']
+        urzadzenie.g = request.json['g']
+        urzadzenie.b = request.json['b']
+        
+        db.session.commit()
+        
+
+
+        
+    return Response(status=200)
+
+        # modul = Moduly()
+        # modul.name = request.form['name']
+        # print modul.name
+        # 
+        # modul = prepare_for_json(modul)
+        
+        # db.session.add(modul)
+        # db.session.commit()
+        
+                
+ 
+
+
+
     
 #########################################################################################
 #*************************************RUN**********************************************#
