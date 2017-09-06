@@ -34,6 +34,7 @@ def prepare_for_json(modul):
     nowy['value1']=modul.value1
     nowy['urzadzenia']=[]
     for i in range(len(modul.urzadzenia.all())):
+        nowy['urzadzenia'].append(modul.urzadzenia.all()[i].id)
         nowy['urzadzenia'].append(modul.urzadzenia.all()[i].name)
         nowy['urzadzenia'].append(modul.urzadzenia.all()[i].rejestr)
         nowy['urzadzenia'].append(modul.urzadzenia.all()[i].sterowanie)
@@ -48,14 +49,15 @@ def prepare_for_json3(_modul):
     _urzadzenia = dict()
     for i in range(len(_modul.urzadzenia.all())):
         _urzadzenia['%s' %i] = {
-            
+            'id': _modul.urzadzenia.all()[i].id,
             'name': _modul.urzadzenia.all()[i].name,
             'rejestr': _modul.urzadzenia.all()[i].rejestr,
             'sterowanie': _modul.urzadzenia.all()[i].sterowanie,
             'wartosc': _modul.urzadzenia.all()[i].wartosc,
             'r': _modul.urzadzenia.all()[i].r,
             'g': _modul.urzadzenia.all()[i].g,
-            'b': _modul.urzadzenia.all()[i].b
+            'b': _modul.urzadzenia.all()[i].b,
+            'stan': _modul.urzadzenia.all()[i].stan
             
             
         }
@@ -64,7 +66,6 @@ def prepare_for_json3(_modul):
             
         
     modul['name']= _modul.name
-    modul['value1']= _modul.value1
     modul['urzadzenia'] = _urzadzenia
     modul['id'] = _modul.id
     
@@ -139,7 +140,7 @@ def addrec():
     if request.method == 'POST':    ## Po kliknieciu submit w newmodule.html
         if form.validate_on_submit(): ## warunki w forms.py
 
-            modul = Moduly(name=request.form['name'],value1=request.form['value1']) ## Nowa instancja klasy Moduly
+            modul = Moduly(name=request.form['name']) ## Nowa instancja klasy Moduly
                                                                           ## zainicjowana przy uzyciu danych z
                                                                           ## formularza newmodule.html
             
@@ -290,16 +291,29 @@ def moduly_post():
         urzadzenie.rejestr = request.json['rejestr']
         urzadzenie.modul_id = request.json['id_modul']
         urzadzenie.sterowanie = request.json['sterowanie']
+
         
         db.session.add(urzadzenie)
         db.session.commit()
     elif ('r' in zadanie):
-        urzadzenie = Urzadzenia.query.filter_by(modul_id = request.json['modul_id']).first()
+        urzadzenie = Urzadzenia.query.filter_by(modul_id = request.json['modul_id'], rejestr = request.json['rejestr']).first()
         urzadzenie.r = request.json['r']
         urzadzenie.g = request.json['g']
         urzadzenie.b = request.json['b']
         
         db.session.commit()
+    elif ('stan' in zadanie):
+        urzadzenie = Urzadzenia.query.filter_by(modul_id = request.json['modul_id'], rejestr = request.json['rejestr']).first()
+        urzadzenie.stan = request.json['stan']
+        
+        db.session.commit()
+    
+    elif ('wartosc' in zadanie):
+        urzadzenie = Urzadzenia.query.filter_by(modul_id = request.json['modul_id'], rejestr = request.json['rejestr']).first()
+        urzadzenie.wartosc = request.json['wartosc']
+        
+        db.session.commit()
+           
         
 
 

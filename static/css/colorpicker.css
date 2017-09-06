@@ -162,24 +162,37 @@
 
 .on_off {
 	position: relative;
-	top: 6px;
+	top: 0px;
 	left: 0px;
 	width: 120px;
-	height: 45px;
-	background: url(../images/onoff.png) bottom;
+	height: 50px;
+	background: url(../images/off.png);
 	background-size: cover;
-	overflow: hidden;
-	float: right
+	float: right;
+	overflow: visible;
+	transform: scale(0.7,0.7);
+
 }
 
 .on_off2 {
 	position: relative;
-	top: -5px;
+	top: 0px;
 	left: 0px;
 	width: 120px;
-	height: 45px;
-	background: url(../images/onoff.png) top;
+	height: 50px;
+	background: url(../images/on.png);
 	background-size: cover;
-	overflow: hidden;
-	float: right
+	float: right;
+	overflow: visible;
+	transform: scale(0.7,0.7);
+	
+}
+.slider {
+	position:relative;
+	left:10px;
+	top:10px;
+	float: right;
+	overflow:hidden;
+	
+	
 }

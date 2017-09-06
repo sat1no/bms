@@ -1,27 +1,6 @@
 {% extends 'layout.html' %}
 
 {% block body %}
-
-
-
-
-
-
-
-
-<p>Link INPUT elements:
-<button class="jscolor
-    {valueElement:'valueInput', styleElement:'styleInput'}">
-    Click here to pick a color
-</button>
-
-<p>
-<input id="valueInput" value="ff6699" hidden='true'>
-<br>
-
-<button id="styleInput" hidden='true'>zmień</button>
-
-
 {% for modul in Moduly %}
 <div class="card border-success mb-3" style="max-width: 40rem;">
   <div class="card-header">{{ modul.name }}<a class='btn btn-light float-right' id='dodaj{{ modul.id }}'>+</a></div>
@@ -45,41 +24,16 @@
   <option value='on/off'>ON/OFF</option>
   <option value='0-100%'>0-100%</option>
   <option value='RGB'>RGB</option>
-  <option value='tylko do oczytu'>Tylko do odczytu</option>
+  <option value='tylko do odczytu'>Tylko do odczytu</option>
 </select>
 <input type='submit' value='Dodaj urzadzenie' style="display: none" id='submit{{ modul.id }}'/>
 </form>
 
 {% endfor %}
 
-
-<!--    <div class="card border-success mb-3" style="max-width: 40rem;">
-      <div class="card-header">Header</div>
-      <div class="card-body text-success">
-        <h4 class="card-title">Secondary card title</h4>
-        <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-      </div>
-    </div>
-
-
-<div class="card border-secondary mb-3" style="max-width: 40rem;">
-  <div class="card-header">Header</div>
-  <div class="card-body text-secondary">
-    <h4 class="card-title">Secondary card title</h4>
-    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-  </div>
-</div>
-<div class="card border-secondary mb-3" style="max-width: 40rem;">
-  <div class="card-header">Header</div>
-  <div class="card-body text-secondary">
-    <h4 class="card-title">Secondary card title</h4>
-    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-  </div>
-</div>
--->
          <center>
         <a href="/addrec">
-           <button class="btn btn-info">Dodaj modul</button>
+           <button class="btn btn-info btn-block">Dodaj modul</button>
         </a>
          </center>
 {% endblock %}

@@ -47,8 +47,7 @@ from __init__ import db
 class Moduly(db.Model):
     __tablename__ = 'Moduly'
     id = db.Column(db.Integer, primary_key = True)
-    name = db.Column(db.String(100))
-    value1 = db.Column(db.Integer)  
+    name = db.Column(db.String(100)) 
 
 
     urzadzenia = db.relationship('Urzadzenia', backref = 'urzadzenia', lazy = 'dynamic')
@@ -62,8 +61,9 @@ class Urzadzenia(db.Model):
     __tablename__ = 'Urzadzenia'
     id = db.Column(db.Integer, primary_key = True)
     name = db.Column('nazwa', db.String(100) )
-    rejestr = db.Column('rejestr', db.Integer, unique=True, nullable=False)
+    rejestr = db.Column('rejestr', db.Integer, nullable=False)
     sterowanie = db.Column('sterowanie', db.String(100))
+    stan = db.Column('stan', db.Integer)
     wartosc = db.Column('wartosc', db.Integer)
     r = db.Column('r', db.Integer)
     g= db.Column('g', db.Integer)

@@ -88,66 +88,78 @@ function update_task_table() {
             var moduly = data.moduly;
             for(var i = 0;i<moduly.length;i++){
                //for(var i = 0; i<moduly[i].urzadzenia.length;i++){
+               // Get the size of an object
+               var iloscUrzadzen = Object.size(moduly[i].urzadzenia);
+               var modul_id = moduly[i].id;
+               for(var j = 0;j<iloscUrzadzen;j++){
                   
-               var urzadzenia = moduly[i].urzadzenia[i];
-               var modul_id = moduly[i].id
-               $('p#text'+(i+1)).append(urzadzenia.name+': <div id="onoff'+modul_id+'" class="on_off"></div>');
-               $(document).on('click', '#onoff'+modul_id , function(event){
-                  $('#onoff'+modul_id).toggleClass('on_off');
+                  var urzadzenia = moduly[i].urzadzenia[j];
+                  $('p#text'+(i+1)).append(urzadzenia.name+'<br>')
+                  if(urzadzenia.sterowanie != 'tylko do odczytu')$('p#text'+(i+1)).append('<a><div id="onoff'+modul_id+urzadzenia.id+'" class="on_off"></div></a>');
+                  RGB(urzadzenia.sterowanie,modul_id,urzadzenia.rejestr,urzadzenia.r,urzadzenia.g,urzadzenia.b)
+                  if(urzadzenia.sterowanie == '0-100%') sliderChange('#bar'+modul_id+urzadzenia.id,urzadzenia.rejestr,modul_id,urzadzenia.id,urzadzenia.wartosc);
 
-                  $('#onoff'+modul_id).toggleClass('on_off2');
 
+                  
 
-
-               
-               }); 
-               if (urzadzenia.sterowanie == 'RGB'){
-                  $('p#text'+modul_id).append('<a id="colorSelector"><div style="background-color: rgb('+urzadzenia.r+','+urzadzenia.g+','+urzadzenia.b+')" ></div></a>');
-                   
-
-                 
-                    
-                  
-                  
-                  
-                  $('#colorSelector').ColorPicker({
-                  color: {r: urzadzenia.r, g: urzadzenia.g,b: urzadzenia.b},
-                  onShow: function (colpkr) {
-                  $(colpkr).fadeIn(500);
-                  
-                  return false;
-                  },
-                  onHide: function (colpkr) {
-                  $(colpkr).fadeOut(500);
-                  return false;
-                  },
-                  onChange: function (hsb, hex, rgb) {
-                  $('#colorSelector div').css('backgroundColor', '#' + hex);
-                  },
-                  
-                  onSubmit: function (hsb, hex, rgb) {
-                  
-                  
-                  var rgbwithid = {r: rgb.r, g: rgb.g, b: rgb.b, modul_id: modul_id}
+                  $('p#text'+(i+1)).append('<br><br>')
+                  togClasses('#onoff'+modul_id+urzadzenia.id,'on_off','on_off2', urzadzenia.rejestr, modul_id);
+                  if (urzadzenia.stan > 0){
                      
-                  $.ajax(
-                         "/moduly",
-                         {
-                           method: "POST",
-                           contentType: "application/json",
-                           data: JSON.stringify(rgbwithid),
-                           success: function (status) {alert(status)}
-                           })
-                  
-                  
+                     $('#onoff'+modul_id+urzadzenia.id).toggleClass('on_off')
+                     $('#onoff'+modul_id+urzadzenia.id).toggleClass('on_off2')
                   }
+                  //if (urzadzenia.sterowanie == 'RGB'){
+                  //   $('p#text'+modul_id).append('<div id="colorSelector"><div style="background-color: rgb('+urzadzenia.r+','+urzadzenia.g+','+urzadzenia.b+')" ></div></div><br>');
+                  //    
+                  //
+                  //  
+                  //     
+                  //   
+                  //   
+                  //   
+                  //   $('#colorSelector').ColorPicker({
+                  //   color: {r: urzadzenia.r, g: urzadzenia.g,b: urzadzenia.b},
+                  //   onShow: function (colpkr) {
+                  //   $(colpkr).fadeIn(500);
+                  //   
+                  //   return false;
+                  //   },
+                  //   onHide: function (colpkr) {
+                  //   $(colpkr).fadeOut(500);
+                  //   return false;
+                  //   },
+                  //   onChange: function (hsb, hex, rgb) {
+                  //   $('#colorSelector div').css('backgroundColor', '#' + hex);
+                  //   },
+                  //   
+                  //   onSubmit: function (hsb, hex, rgb) {
+                  //   
+                  //   
+                  //   var rgbwithid = {r: rgb.r, g: rgb.g, b: rgb.b, modul_id: modul_id, rejestr: urzadzenia.rejestr}
+                  //      
+                  //   $.ajax(
+                  //          "/moduly",
+                  //          {
+                  //            method: "POST",
+                  //            contentType: "application/json",
+                  //            data: JSON.stringify(rgbwithid),
+                  //            success: function (status) {alert(status)}
+                  //            })
+                  //   
+                  //   
+                  //   }
+                  //   
+                  //   });
                   
-                  });
+               }                  
                   
                }
 
+
+
             }
-         }
+         
      });
 
    
@@ -175,6 +187,110 @@ function clear_text() {
     //    }
     //}
 
+function togClasses(id,class1,class2,rejestr,modul_id){
+   
+   $(document).on('click', id , function(event){
+   $(id).toggleClass(class1);
+   
+   $(id).toggleClass(class2);
+   
+   var onOff = {modul_id: modul_id, rejestr: rejestr};
+   var className = $(id).attr("class");
+   if( className == 'on_off') onOff['stan'] = 0;
+   else onOff['stan'] = 1;
+
+
+   $.ajax('/moduly',
+          {
+            method: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(onOff),
+            success: function(status){}
+            
+            });
+   
+
+
+   
+   
+   }); 
+}
+function sliderChange(id,rejestr,modul_id,urzadzenia_id,urzadzenia_wartosc){
+   
+
+
+      $('p#text'+modul_id).append('<p class="slider"><input type="range" id="bar'+modul_id+urzadzenia_id+'" min="0" max="100" step="1" value="'+urzadzenia_wartosc+'"></p>')
+      $('p#text'+modul_id).append('<div class="costam slider">'+urzadzenia_wartosc+'%</div>')
+
+   $(document).on('change', id , function(event){  
+      var value = $(this).val()
+      $('.costam').empty()
+      $('.costam').append(value+'%')
+      $.ajax(
+          "/moduly",
+          {
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify({rejestr: rejestr, modul_id: modul_id, wartosc: value}),
+            success: function (status) {}
+            })
+      
+      });
+}
+
+Object.size = function(obj) {
+    var size = 0, key;
+    for (key in obj) {
+        if (obj.hasOwnProperty(key)) size++;
+    }
+    return size;
+};
+
+function RGB(sterowanie,modul_id,rejestr,r,g,b){
+   
+   
+   
+   if (sterowanie == 'RGB'){
+   if(r === null || g === null || b === null){r=0,g=0,b=0}
+   $('p#text'+modul_id).append('<div id="colorSelector" class="rgb'+modul_id+'"><div class="rgbi'+modul_id+'"style="background-color: rgb('+r+','+g+','+b+')" ></div></div>');
+    
+
+  
+   $('.rgb'+modul_id).ColorPicker({
+   color: {r: r, g: g,b: b},
+   onShow: function (colpkr) {
+   $(colpkr).fadeIn(500);
+   
+   return false;
+   },
+   onHide: function (colpkr) {
+   $(colpkr).fadeOut(500);
+   return false;
+   },
+   onChange: function (hsb, hex, rgb) {
+   $('.rgbi'+modul_id).css('backgroundColor', '#' + hex);
+   },
+   
+   onSubmit: function (hsb, hex, rgb) {
+   
+   
+   var rgbwithid = {r: rgb.r, g: rgb.g, b: rgb.b, modul_id: modul_id, rejestr: rejestr}
+      
+   $.ajax(
+          "/moduly",
+          {
+            method: "POST",
+            contentType: "application/json",
+            data: JSON.stringify(rgbwithid),
+            success: function (status) {}
+            })
+   
+   }
+   
+   }); 
+     
+}
+}
 
 
 

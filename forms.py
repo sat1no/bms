@@ -41,9 +41,6 @@ class UrzadzeniaForm(Form):
 
 class NewModuleForm(Form):
    name = TextField('name', validators=[validators.DataRequired()])
-   value1 = IntegerField('value1', validators=[validators.DataRequired()])
+
 
    
-   def validate_name(form, field):
-      if len(field.data) < 4:
-         raise ValidationError(flash("za krotko"))
