@@ -1,6 +1,11 @@
 {% extends 'layout.html' %}
 
 {% block body %}
+
+   <div>
+      <image src="http://192.168.0.31:8081/">
+   </div>
+
 {% for modul in Moduly %}
 <div class="card border-success mb-3" style="max-width: 40rem;">
   <div class="card-header">{{ modul.name }}<a class='btn btn-light float-right' id='dodaj{{ modul.id }}'>+</a></div>
