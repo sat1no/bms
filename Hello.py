@@ -3,14 +3,12 @@ from flask import   Flask, redirect, g, url_for, flash, \
 import random, string, sqlite3, os, wtforms
 from werkzeug import secure_filename
 from forms import ContactForm, LoginForm, NewModuleForm, UrzadzeniaForm
-import flask_sijax
 from models import Moduly, Urzadzenia
 from __init__ import app, db
+from modbusmaster import writeRegister, readRegisters
 
 
 
-
-flask_sijax.Sijax(app)
 
 # class Moduly(db.Model):
 #     id = db.Column('modul_id',db.Integer, primary_key = True)
@@ -26,7 +24,28 @@ flask_sijax.Sijax(app)
 #         self.value2 = value2
 #         self.value3 = value3   
 #    
-
+def zapisPoOdczycie(address, rejestrPoczatkowy, liczbaRejestrow):
+    a = readRegisters(address,rejestrPoczatkowy,liczbaRejestrow)
+    if a != -1:
+        urzadzenie = Urzadzenia.query.filter_by(modul_id = address, rejestr = rejestrPoczatkowy).first()
+        if len(a) == 1:
+            urzadzenie.stan = a[0]
+            
+            db.session.commit()
+        elif len(a) == 2:
+            urzadzenie.stan = a[0]
+            urzadzenie.wartosc = a[1]
+            db.session.commit()
+        elif len(a) == 4:
+            urzadzenie.stan = a[0]
+            urzadzenie.r = a[1]
+            urzadzenie.g = a[2]
+            urzadzenie.b = a[3]
+            db.session.commit()
+        else:
+            return -1
+        
+        
 
 def prepare_for_json(modul):
     nowy = dict()
@@ -262,8 +281,20 @@ def details(address):
 @app.route('/moduly', methods = ['GET'])
 def moduly_get():
 
-    moduly = []
+    all_modules = Moduly.query.all()
+    for i in range(len(all_modules)):
+        size = len(all_modules[i].urzadzenia.all())
+        for j in range(size):
+            urzadzenie = all_modules[i].urzadzenia.all()[j]
+            if urzadzenie.sterowanie == 'RGB':
+                zapisPoOdczycie(all_modules[i].id,urzadzenie.rejestr,4)
+            elif urzadzenie.sterowanie == '0-100%':
+                zapisPoOdczycie(all_modules[i].id,urzadzenie.rejestr,2)
+            else:
+                zapisPoOdczycie(all_modules[i].id,urzadzenie.rejestr,1)
 
+    moduly = []
+    
     all_modules = Moduly.query.all()
     for modul in all_modules:
         
@@ -301,18 +332,34 @@ def moduly_post():
         urzadzenie.g = request.json['g']
         urzadzenie.b = request.json['b']
         
-        db.session.commit()
+        
+        
+        wyslij = writeRegister(request.json['modul_id'],request.json['rejestr']+1,request.json['r'])
+        wyslij2 = writeRegister(request.json['modul_id'],request.json['rejestr']+2,request.json['g'])
+        wyslij3 = writeRegister(request.json['modul_id'],request.json['rejestr']+3,request.json['b'])
+        
+        if wyslij == 1 and wyslij2 == 1 and wyslij3 == 1:
+            db.session.commit()
+        
+
     elif ('stan' in zadanie):
         urzadzenie = Urzadzenia.query.filter_by(modul_id = request.json['modul_id'], rejestr = request.json['rejestr']).first()
         urzadzenie.stan = request.json['stan']
         
-        db.session.commit()
+        wyslij = writeRegister(request.json['modul_id'],request.json['rejestr'],request.json['stan'])
+        
+        if wyslij == 1:
+            db.session.commit()
     
     elif ('wartosc' in zadanie):
         urzadzenie = Urzadzenia.query.filter_by(modul_id = request.json['modul_id'], rejestr = request.json['rejestr']).first()
         urzadzenie.wartosc = request.json['wartosc']
+        print urzadzenie.wartosc
         
-        db.session.commit()
+        wyslij = writeRegister(request.json['modul_id'],request.json['rejestr']+1,request.json['wartosc'])
+        
+        if wyslij == 1:
+            db.session.commit()
            
         
 
@@ -341,7 +388,7 @@ def moduly_post():
 
 if __name__ == '__main__':
     db.create_all()
-    app.run(debug = True, host='192.168.0.38')
+    app.run(debug = True, host='192.168.0.94')
     
 
 

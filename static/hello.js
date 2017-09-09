@@ -1,9 +1,14 @@
+
 $(document).ready(function () {
    
    // load the content initially
    // GET /
-   clear_text();
-   update_task_table() ;
+   
+   //setInterval(function() {
+
+   //}, 1500);
+
+   update_task_table();
 
 
    
@@ -55,7 +60,7 @@ $(document).ready(function () {
                   success: function(data,status) {
                      alert(status);
                      clear_text();
-                     update_task_table();
+         
                   }
                   
                 });
@@ -85,6 +90,7 @@ function update_task_table() {
          success: function(data, status) {
             //alert(data.nowe[0].name);
             //alert(status);
+            clear_text();
             var moduly = data.moduly;
             for(var i = 0;i<moduly.length;i++){
                //for(var i = 0; i<moduly[i].urzadzenia.length;i++){
@@ -109,48 +115,6 @@ function update_task_table() {
                      $('#onoff'+modul_id+urzadzenia.id).toggleClass('on_off')
                      $('#onoff'+modul_id+urzadzenia.id).toggleClass('on_off2')
                   }
-                  //if (urzadzenia.sterowanie == 'RGB'){
-                  //   $('p#text'+modul_id).append('<div id="colorSelector"><div style="background-color: rgb('+urzadzenia.r+','+urzadzenia.g+','+urzadzenia.b+')" ></div></div><br>');
-                  //    
-                  //
-                  //  
-                  //     
-                  //   
-                  //   
-                  //   
-                  //   $('#colorSelector').ColorPicker({
-                  //   color: {r: urzadzenia.r, g: urzadzenia.g,b: urzadzenia.b},
-                  //   onShow: function (colpkr) {
-                  //   $(colpkr).fadeIn(500);
-                  //   
-                  //   return false;
-                  //   },
-                  //   onHide: function (colpkr) {
-                  //   $(colpkr).fadeOut(500);
-                  //   return false;
-                  //   },
-                  //   onChange: function (hsb, hex, rgb) {
-                  //   $('#colorSelector div').css('backgroundColor', '#' + hex);
-                  //   },
-                  //   
-                  //   onSubmit: function (hsb, hex, rgb) {
-                  //   
-                  //   
-                  //   var rgbwithid = {r: rgb.r, g: rgb.g, b: rgb.b, modul_id: modul_id, rejestr: urzadzenia.rejestr}
-                  //      
-                  //   $.ajax(
-                  //          "/moduly",
-                  //          {
-                  //            method: "POST",
-                  //            contentType: "application/json",
-                  //            data: JSON.stringify(rgbwithid),
-                  //            success: function (status) {alert(status)}
-                  //            })
-                  //   
-                  //   
-                  //   }
-                  //   
-                  //   });
                   
                }                  
                   
@@ -158,6 +122,11 @@ function update_task_table() {
 
 
 
+            },
+            complete: function (){
+              
+              setTimeout(update_task_table, 2500);
+            return false;
             }
          
      });
@@ -189,27 +158,28 @@ function clear_text() {
 
 function togClasses(id,class1,class2,rejestr,modul_id){
    
-   $(document).on('click', id , function(event){
-   $(id).toggleClass(class1);
+   //$(document).on('click', id , function(event){
+      $(id).bind('click', function(event){
+      $(id).toggleClass(class1);
+      
+      $(id).toggleClass(class2);
+      
+      var onOff = {modul_id: modul_id, rejestr: rejestr};
+      var className = $(id).attr("class");
+      if( className == 'on_off') onOff['stan'] = 0;
+      else onOff['stan'] = 1;
    
-   $(id).toggleClass(class2);
    
-   var onOff = {modul_id: modul_id, rejestr: rejestr};
-   var className = $(id).attr("class");
-   if( className == 'on_off') onOff['stan'] = 0;
-   else onOff['stan'] = 1;
-
-
-   $.ajax('/moduly',
-          {
-            method: 'POST',
-            contentType: 'application/json',
-            data: JSON.stringify(onOff),
-            success: function(status){}
-            
-            });
+      $.ajax('/moduly',
+             {
+               method: 'POST',
+               contentType: 'application/json',
+               data: JSON.stringify(onOff),
+               success: function(status){}
+               
+               });
+      
    
-
 
    
    
@@ -220,21 +190,23 @@ function sliderChange(id,rejestr,modul_id,urzadzenia_id,urzadzenia_wartosc){
 
 
       $('p#text'+modul_id).append('<p class="slider"><input type="range" id="bar'+modul_id+urzadzenia_id+'" min="0" max="100" step="1" value="'+urzadzenia_wartosc+'"></p>')
-      $('p#text'+modul_id).append('<div class="costam slider">'+urzadzenia_wartosc+'%</div>')
+      $('p#text'+modul_id).append('<div class="costam slider">'+urzadzenia_wartosc+'%</div>');
 
-   $(document).on('change', id , function(event){  
-      var value = $(this).val()
-      $('.costam').empty()
+   $(id).bind('click', function(event){  
+      var value = $(this).val();
+
+      $('.costam').empty();
       $('.costam').append(value+'%')
+      value = parseInt(value)
       $.ajax(
           "/moduly",
           {
             method: "POST",
             contentType: "application/json",
             data: JSON.stringify({rejestr: rejestr, modul_id: modul_id, wartosc: value}),
-            success: function (status) {}
-            })
-      
+            success: function () {}
+            });
+      return false;
       });
 }
 
@@ -251,46 +223,65 @@ function RGB(sterowanie,modul_id,rejestr,r,g,b){
    
    
    if (sterowanie == 'RGB'){
-   if(r === null || g === null || b === null){r=0,g=0,b=0}
-   $('p#text'+modul_id).append('<div id="colorSelector" class="rgb'+modul_id+'"><div class="rgbi'+modul_id+'"style="background-color: rgb('+r+','+g+','+b+')" ></div></div>');
-    
-
-  
-   $('.rgb'+modul_id).ColorPicker({
-   color: {r: r, g: g,b: b},
-   onShow: function (colpkr) {
-   $(colpkr).fadeIn(500);
+      if(r === null || g === null || b === null){r=0;
+      g=0;
+      b=0;}
+      $('p#text'+modul_id).append('<div id="colorSelector" class="rgb'+modul_id+'"><div class="rgbi'+modul_id+'"style="background-color: rgb('+r+','+g+','+b+')" ></div></div>');
+       
    
-   return false;
-   },
-   onHide: function (colpkr) {
-   $(colpkr).fadeOut(500);
-   return false;
-   },
-   onChange: function (hsb, hex, rgb) {
-   $('.rgbi'+modul_id).css('backgroundColor', '#' + hex);
-   },
-   
-   onSubmit: function (hsb, hex, rgb) {
-   
-   
-   var rgbwithid = {r: rgb.r, g: rgb.g, b: rgb.b, modul_id: modul_id, rejestr: rejestr}
+     
+      $('.rgb'+modul_id).ColorPicker({
+      color: {r: r, g: g,b: b},
+      onShow: function (colpkr) {
+      $(colpkr).fadeIn(500);
       
-   $.ajax(
-          "/moduly",
-          {
-            method: "POST",
-            contentType: "application/json",
-            data: JSON.stringify(rgbwithid),
-            success: function (status) {}
-            })
-   
-   }
-   
-   }); 
+      return false;
+      },
+      onHide: function (colpkr) {
+      $(colpkr).fadeOut(500);
+      return false;
+      },
+      onChange: function (hsb, hex, rgb) {
+      $('.rgbi'+modul_id).css('backgroundColor', '#' + hex);
+      },
+      
+      onSubmit: function (hsb, hex, rgb) {
+      
+      
+      var rgbwithid = {r: rgb.r, g: rgb.g, b: rgb.b, modul_id: modul_id, rejestr: rejestr}
+         
+      $.ajax(
+             "/moduly",
+             {
+               method: "POST",
+               contentType: "application/json",
+               data: JSON.stringify(rgbwithid),
+               success: function (status) {}
+            });
+      
+      }
+      
+      }); 
      
 }
 }
 
-
+//function interval(func, wait, times){
+//    var interv = function(w, t){
+//        return function(){
+//            if(typeof t === "undefined" || t-- > 0){
+//                setTimeout(interv, w);
+//                try{
+//                    func.call(null);
+//                }
+//                catch(e){
+//                    t = 0;
+//                    throw e.toString();
+//                }
+//            }
+//        };
+//    }(wait, times);
+//
+//    setTimeout(interv, wait);
+//};
 

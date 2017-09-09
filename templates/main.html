@@ -2,12 +2,9 @@
 
 {% block body %}
 
-   <div>
-      <image src="http://192.168.0.31:8081/">
-   </div>
 
 {% for modul in Moduly %}
-<div class="card border-success mb-3" style="max-width: 40rem;">
+<div class="card border-success mb-3">
   <div class="card-header">{{ modul.name }}<a class='btn btn-light float-right' id='dodaj{{ modul.id }}'>+</a></div>
   <div class="card-body text-success">
     <h5 class="card-title">
@@ -43,8 +40,7 @@
          </center>
 {% endblock %}
 {% block scripts %}
-<script src="{{ url_for('static', filename='js/EYE.js')}}"></script>
-<script src="{{ url_for('static', filename='js/utils.js')}}"></script>
+
 <script src="{{url_for('static', filename='hello.js')}}"></script>
 
 {% endblock %}

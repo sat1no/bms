@@ -1,16 +1,20 @@
 <!doctype html>
 <html>
+   
    <head>
+
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
       <link rel="stylesheet" media="screen" type="text/css" href="static/css/colorpicker.css" />
        <link rel="stylesheet" media="screen" type="text/css" href="static/css/layout.css" />
-      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous">
-
-
-      <meta name="viewport" content="width=device-width, minimum-scale=0.1">
+       <meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=0.5; minimum-scale=0.1; target-densityDpi=device-dpi" />
+      
+      
+      
 
 <!--<link rel= "stylesheet" type= "text/css" href= "{{ url_for('static',filename='css/cover.css') }}">-->
    </head>
    <body>
+
 <title>My Application</title>
 <div class="row">
    <div class=col>
@@ -38,7 +42,10 @@
     </form>
   </div>
 </nav>
-         
+<!--   <image style ="-webkit-user-select: none;" src="http://192.168.0.31:8081/">-->
+
+
+
 
 </div>
 </div>
@@ -72,9 +79,19 @@
 {% endwith %}
 </div>
 <!--<div class="container">-->
+
+
+
 <div class="row">
 
 <div class="col-3">
+<style>
+@media only screen and (max-width: 500px) {
+    body {
+        background-color: lightblue;
+    }   
+/*   <img style="webkit-user-select: none;"src="http://192.168.0.31:8081/">*/
+</style>
 <div class="list-group">
 
 {% for modul in Moduly %}
