@@ -10,20 +10,11 @@ from modbusmaster import writeRegister, readRegisters
 
 
 
-# class Moduly(db.Model):
-#     id = db.Column('modul_id',db.Integer, primary_key = True)
-#     name = db.Column(db.String(100))
-#     value1 = db.Column(db.Integer)  
-#     value2 = db.Column(db.Integer)
-#     value3 = db.Column(db.Integer)
-#     # user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-#     
-#     def __init__(self, name, value1, value2, value3):
-#         self.name = name
-#         self.value1 = value1
-#         self.value2 = value2
-#         self.value3 = value3   
-#    
+##########################################################################################
+########################################FUNKCJE###########################################
+##########################################################################################
+
+
 def zapisPoOdczycie(address, rejestrPoczatkowy, liczbaRejestrow):
     a = readRegisters(address,rejestrPoczatkowy,liczbaRejestrow)
     if a != -1:
@@ -45,8 +36,7 @@ def zapisPoOdczycie(address, rejestrPoczatkowy, liczbaRejestrow):
         else:
             return -1
         
-        
-
+###### na tablicy       
 def prepare_for_json(modul):
     nowy = dict()
     nowy['name']=modul.name
@@ -63,6 +53,7 @@ def prepare_for_json(modul):
         nowy['urzadzenia'].append(modul.urzadzenia.all()[i].b)    
     return nowy
 
+##### na slowniku
 def prepare_for_json3(_modul):
     modul = dict()
     _urzadzenia = dict()
@@ -90,11 +81,6 @@ def prepare_for_json3(_modul):
     
     return modul
 
-def prepare_for_json2(urzadzenia):
-    nowy = dict()
-    nowy['name']=urzadzenia.name
-    nowy['rejestr']=urzadzenia.rejestr
-    return nowy
 #########################################################################################
         ###########################INDEX#####################################
 #########################################################################################
@@ -102,11 +88,11 @@ def prepare_for_json2(urzadzenia):
 
 @app.route('/', methods=['GET','POST'])
 def index():
-    # if 'username' in session:
-    #     username = session['username']
-    liczba_modulow = len(Moduly.query.all())
-    return render_template('main.html', Moduly = Moduly.query.all(), Urzadzenia = Urzadzenia.query.all(),liczba_modulow = liczba_modulow)
-    # return redirect(url_for('login'))
+    if 'username' in session:
+        username = session['username']
+        liczba_modulow = len(Moduly.query.all())
+        return render_template('main.html', Moduly = Moduly.query.all(), Urzadzenia = Urzadzenia.query.all(),liczba_modulow = liczba_modulow)
+    return redirect(url_for('login'))
 
 
 @app.route('/_add_numbers')
@@ -250,27 +236,6 @@ def logout():
    flash("Wylogowano","success")
    return redirect(url_for('index'))
 
-#########################################################################################
-        ###########################UPLOAD#####################################
-#########################################################################################
-        
-
-@app.route('/uploader', methods = ['GET', 'POST'])
-def uploader_file():
-
-    if request.method == 'POST':
-        f = request.files['file']
-        if f.filename == '':
-            flash('nie wybrales pliku')
-            return render_template('upload.html')
-                 
-        else:
-            f.save(secure_filename(f.filename))
-            flash('upload przebiegl pomyslnie')
-            return render_template('upload.html')
-        
-    if request.method == 'GET':
-        return render_template('upload.html')
 
 ############REST
 @app.route('/list/<int:address>', methods = ['GET','POST'])
@@ -301,7 +266,6 @@ def moduly_get():
         item = prepare_for_json3(modul)
         moduly.append(item)
         
-        print(modul)
         
     
        
@@ -314,7 +278,7 @@ def moduly_get():
 def moduly_post():
     
     zadanie = request.json
-    print(zadanie)
+
     
     if ('nazwa' in zadanie): 
         urzadzenie = Urzadzenia()
@@ -367,21 +331,7 @@ def moduly_post():
         
     return Response(status=200)
 
-        # modul = Moduly()
-        # modul.name = request.form['name']
-        # print modul.name
-        # 
-        # modul = prepare_for_json(modul)
-        
-        # db.session.add(modul)
-        # db.session.commit()
-        
-                
- 
 
-
-
-    
 #########################################################################################
 #*************************************RUN**********************************************#
 #########################################################################################
