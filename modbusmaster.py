@@ -1,18 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf_8 -*-
-"""
- Modbus TestKit: Implementation of Modbus protocol in python
- (C)2009 - Luc Jean - luc.jean@gmail.com
- (C)2009 - Apidev - http://www.apidev.fr
- This is distributed under GNU LGPL license, see license.txt
-"""
 
 import sys
 import serial
-
-#add logging capability
 import logging
-
 import modbus_tk
 import modbus_tk.defines as cst
 import modbus_tk.modbus_rtu as modbus_rtu

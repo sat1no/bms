@@ -19,8 +19,12 @@ def zapisPoOdczycie(address, rejestrPoczatkowy, liczbaRejestrow):
     a = readRegisters(address,rejestrPoczatkowy,liczbaRejestrow)
     if a != -1:
         urzadzenie = Urzadzenia.query.filter_by(modul_id = address, rejestr = rejestrPoczatkowy).first()
-        if len(a) == 1:
+        if len(a) == 1 and urzadzenie.sterowanie != "tylko do odczytu":
             urzadzenie.stan = a[0]
+            
+            db.session.commit()
+        elif len(a) == 1 and urzadzenie.sterowanie == "tylko do odczytu":
+            urzadzenie.wartosc = a[0]
             
             db.session.commit()
         elif len(a) == 2:
@@ -237,11 +241,17 @@ def logout():
    return redirect(url_for('index'))
 
 
-############REST
-@app.route('/list/<int:address>', methods = ['GET','POST'])
-def details(address):
-    modul = Moduly.query.filter_by(id = address).first()
-    return render_template('main.html', Moduly = Moduly.query.all())
+#########################################################################################
+#########################################################################################
+        ###########################REST#####################################
+#########################################################################################
+#########################################################################################
+
+
+
+#########################################################################################
+        ###########################GET#####################################
+#########################################################################################
 
 @app.route('/moduly', methods = ['GET'])
 def moduly_get():
@@ -272,7 +282,9 @@ def moduly_get():
     return jsonify({'moduly': moduly})
 
 
-
+#########################################################################################
+        ###########################POST#####################################
+#########################################################################################
 
 @app.route('/moduly', methods = ['POST'])
 def moduly_post():
@@ -331,6 +343,9 @@ def moduly_post():
         
     return Response(status=200)
 
+@app.route('/sceny', methods = ['GET'])
+def scena():
+    return render_template('sceny.html', Moduly = Moduly.query.all())
 
 #########################################################################################
 #*************************************RUN**********************************************#

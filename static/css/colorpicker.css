@@ -299,4 +299,125 @@ img {
 	overflow:hidden;
 }
 
+.default-0 {
+	position: relative;
+	top: 0px;
+	left: 0px;
+	background: url(../images/default-0.png);
+	background-size: cover;
+	float: right;
+	overflow: hidden;
+	width: 29px;
+	height: 32px;
+	
+}
+.default-1{
+	position: relative;
+	top: 0px;
+	left: 0px;
+	background: url(../images/default-1.png);
+	background-size: cover;
+	float: right;
+	overflow: hidden;
+	width: 20px;
+	height: 32px;
+
+}
+.default-2 {
+	position: relative;
+	top: 0px;
+	left: 0px;
+	background: url(../images/default-2.png);
+	background-size: cover;
+	float: right;
+	overflow: hidden;
+	width: 28px;
+	height: 32px;
+	
+}
+.default-3 {
+	position: relative;
+	top: 0px;
+	left: 0px;
+	background: url(../images/default-3.png);
+	background-size: cover;
+	float: right;
+	overflow: hidden;
+	width: 28px;
+	height: 32px;
+	
+}
+.default-4 {
+	position: relative;
+	top: 0px;
+	left: 0px;
+	background: url(../images/default-4.png);
+	background-size: cover;
+	float: right;
+	overflow: hidden;
+	width: 30px;
+	height: 32px;
+
+}
+.default-5 {
+	position: relative;
+	top: 0px;
+	left: 0px;
+	background: url(../images/default-5.png);
+	background-size: cover;
+	float: right;
+	overflow: hidden;
+	width: 28px;
+	height: 32px;
+	
+}
+.default-6 {
+	position: relative;
+	top: 0px;
+	left: 0px;
+	background: url(../images/default-6.png);
+	background-size: cover;
+	float: right;
+	overflow: hidden;
+	width: 28px;
+	height: 32px;
+
+}
+.default-7 {
+	position: relative;
+	top: 0px;
+	left: 0px;
+	background: url(../images/default-7.png);
+	background-size: cover;
+	float: right;
+	overflow: hidden;
+	width: 26px;
+	height: 32px;
+
+}
+.default-8 {
+	position: relative;
+	top: 0px;
+	left: 0px;
+	background: url(../images/default-8.png);
+	background-size: cover;
+	float: right;
+	overflow: hidden;
+	width: 28px;
+	height: 32px;
+
+}
+.default-9 {
+	position: relative;
+	top: 0px;
+	left: 0px;
+	background: url(../images/default-9.png);
+	background-size: cover;
+	float: right;
+	overflow: hidden;
+	width: 26px;
+	height: 32px;
+
+}
+
 

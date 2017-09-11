@@ -68,22 +68,8 @@ $(document).ready(function () {
          let sterowanie = $("#sterowanie"+(i+1)).val();
       
          event.preventDefault();
-         let json = {nazwa: nazwa, rejestr:rejestr, id_modul:id_modul, sterowanie:sterowanie}
+         let json = {nazwa: nazwa, rejestr:rejestr, id_modul:id_modul, sterowanie:sterowanie};
          ajaxPost(json);
-         //insert new element in db
-         //$.ajax("/moduly",
-         //       {
-         //         method: "POST",
-         //         contentType: 'application/json',
-         //         data: JSON.stringify(json),
-         //         
-         //         success: function(data,status) {
-         //            alert(status);
-         //            clear_text();
-         //
-         //         }
-         //         
-         //       });
       });
    }
 });     
@@ -126,14 +112,14 @@ function update_task_table() {
                   $("#ready").hide();
                   $("#contentLoading2").show();
                   if(urzadzenia.sterowanie != 'tylko do odczytu')$('p#text'+(i+1)).append('<a><div id="onoff'+modul_id+urzadzenia.id+'" class="on_off"></div></a>');
-                  else{valueChange(modul_id,urzadzenia.wartosc)}
+                  else{valueChange(modul_id,urzadzenia.wartosc);}
                   RGB(urzadzenia.sterowanie,modul_id,urzadzenia.rejestr,urzadzenia.r,urzadzenia.g,urzadzenia.b);
                   if(urzadzenia.sterowanie == '0-100%') sliderChange('#bar'+modul_id+urzadzenia.id,urzadzenia.rejestr,modul_id,urzadzenia.id,urzadzenia.wartosc);
 
                   
                   
 
-                  $('p#text'+(i+1)).append('<br><br>');
+                  $('p#text'+(i+1)).append('<br><br><br>');
                   togClasses('#onoff'+modul_id+urzadzenia.id,'on_off','on_off2', urzadzenia.rejestr, modul_id);
                   if (urzadzenia.stan > 0){
                      
@@ -160,17 +146,26 @@ function update_task_table() {
    
    
 }
-function valueChange(modul_id,wartosc){
+function valueChange(modul_id, wartosc){
    
-   if (wartosc == null) nowaWartosc = 0;
-   $('p#text'+modul_id).append('<p class="slider"><h3 class="h3">'+nowaWartosc+'</h3></p>')
+   if (wartosc === null) wartosc = 0;
    
+    output = [];
+    sNumber = wartosc.toString();
+
+   for (var i = 0, len = sNumber.length; i < len; i += 1) {
+       output.push(+sNumber.charAt(i));
+   }
+
+   if (output.length == 1) $('p#text'+modul_id).append('<div class="container"><p class="default-'+output[0]+'"></p></div>');
+   else if (output.length == 2) $('p#text'+modul_id).append('<div class="container"><p class="default-'+output[1]+'"></p><p class="default-'+output[0]+'"></p></div>');
+   else if (output.length == 3) $('p#text'+modul_id).append('<div class="container"><p class="default-'+output[2]+'"></p><p class="default-'+output[1]+'"></p><p class="default-'+output[0]+'"></p></div>');
 }
 
 
 function clear_text() {
    
-   $('p.card-text').empty()
+   $('p.card-text').empty();
    var list = document.getElementsByClassName("colorpicker");
    for (var i = 0; i < list.length-4; i++) {
     list[i].outerHTML = "";
@@ -212,9 +207,9 @@ function sliderChange(id,rejestr,modul_id,urzadzenia_id,urzadzenia_wartosc){
       var value = $(this).val();
 
       $('.costam').empty();
-      $('.costam').append(value+'%')
-      value = parseInt(value)
-      var json = {rejestr: rejestr, modul_id: modul_id, wartosc: value}
+      $('.costam').append(value+'%');
+      value = parseInt(value);
+      var json = {rejestr: rejestr, modul_id: modul_id, wartosc: value};
       ajaxPost(json);
       
       });

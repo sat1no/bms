@@ -1,0 +1,83 @@
+{% extends 'layout.html' %}
+
+{% block body %}
+<link rel="stylesheet" type="text/css" href="static/css/sceny.css">
+<div class="main">
+<!--<button class="btn-lg">+</button>-->
+<!--<p id="test"></p>-->
+    
+
+
+<!--<div class="dropdown">
+
+  <div id="myDropdown" class="dropdown-content">
+    {% for modul in Moduly %}
+        <a href="#" id="{{ modul.name }}">{{ modul.name }}</a>
+    {% endfor %}
+  </div>
+    <div id="myDropdown2" class="dropdown-content">
+    {% for modul in Moduly %}
+        {% if modul.id == 1 %}
+        {% for urzadzenie in modul.urzadzenia.all() %}
+        <a href="#" id="{{ urzadzenie.name }}" class="btn-lg">{{ urzadzenie.name }}</a>
+        {% endfor %}
+        {% endif %}
+
+    {% endfor %}
+  </div>
+
+</div>-->
+<div class="container">
+	<div class="row">
+        <div class="dropdown">
+            <a id="dLabel" role="button" data-toggle="dropdown" class="btn btn-primary" data-target="#" href="/page.html">
+                + <span class="caret"></span>
+            </a>
+    		<ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu">
+               {% for modul in Moduly %}     
+              <li class="divider"></li>
+              <li class="dropdown-submenu dropdown-content">
+                <a tabindex="-1" id="{{ modul.name }}">{{ modul.name }}</a>
+                <ul class="dropdown-menu">
+
+                    {% if modul.id == 1 %}
+                    {% for urzadzenie in modul.urzadzenia.all() %}
+                    <li class="dropdown-submenu">
+                    <li class="dropdown-content">
+                        <a href="#" id="{{ urzadzenie.name }}">{{ urzadzenie.name }}</a>
+                    </li>
+                    </li>
+                    {% endfor %}
+                    {% endif %}                   
+                    {% if modul.id == 2 %}
+                    {% for urzadzenie in modul.urzadzenia.all() %}
+                    <li class="dropdown-submenu">
+                    <li class="dropdown-content">
+                        <a href="#" id="{{ urzadzenie.name }}">{{ urzadzenie.name }}</a>
+                    </li>
+                    </li>
+                    {% endfor %}
+                    {% endif %}
+                    {% if modul.id == 3 %}
+                    {% for urzadzenie in modul.urzadzenia.all() %}
+                    <li class="dropdown-submenu">
+                    <li class="dropdown-content">
+                        <a href="#" id="{{ urzadzenie.name }}">{{ urzadzenie.name }}</a>
+                    </li>
+                    </li>
+                    {% endfor %}
+                    {% endif %}
+
+                </ul>
+              </li>
+            {% endfor %}
+             </ul>
+        </div>
+	</div>
+</div>
+
+
+
+</div>
+
+{% endblock %}
