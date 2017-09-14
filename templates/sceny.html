@@ -6,7 +6,9 @@
 <!--<button class="btn-lg">+</button>-->
 <!--<p id="test"></p>-->
     
+<div class="container" id="sceny">
 
+</div>
 
 <!--<div class="dropdown">
 
@@ -28,11 +30,13 @@
 
 </div>-->
 <div class="container">
-	<div class="row">
-        <div class="dropdown">
+	<!--<div class="row">-->
+        <div class="dropdown divabs">
+			
             <a id="dLabel" role="button" data-toggle="dropdown" class="btn btn-primary" data-target="#" href="/page.html">
                 + <span class="caret"></span>
             </a>
+			
     		<ul class="dropdown-menu multi-level" role="menu" aria-labelledby="dropdownMenu">
                {% for modul in Moduly %}     
               <li class="divider"></li>
@@ -44,7 +48,7 @@
                     {% for urzadzenie in modul.urzadzenia.all() %}
                     <li class="dropdown-submenu">
                     <li class="dropdown-content">
-                        <a href="#" id="{{ urzadzenie.name }}">{{ urzadzenie.name }}</a>
+                        <a href="#" id="urzadzenie{{ urzadzenie.id }}">{{ urzadzenie.name }}</a>
                     </li>
                     </li>
                     {% endfor %}
@@ -53,7 +57,7 @@
                     {% for urzadzenie in modul.urzadzenia.all() %}
                     <li class="dropdown-submenu">
                     <li class="dropdown-content">
-                        <a href="#" id="{{ urzadzenie.name }}">{{ urzadzenie.name }}</a>
+                        <a href="#" id="urzadzenie{{ urzadzenie.id }}">{{ urzadzenie.name }}</a>
                     </li>
                     </li>
                     {% endfor %}
@@ -62,7 +66,7 @@
                     {% for urzadzenie in modul.urzadzenia.all() %}
                     <li class="dropdown-submenu">
                     <li class="dropdown-content">
-                        <a href="#" id="{{ urzadzenie.name }}">{{ urzadzenie.name }}</a>
+                        <a href="#" id="urzadzenie{{ urzadzenie.id }}">{{ urzadzenie.name }}</a>
                     </li>
                     </li>
                     {% endfor %}
@@ -73,11 +77,18 @@
             {% endfor %}
              </ul>
         </div>
-	</div>
+	<!--</div>-->
+</div>
+<br>
+
+
+
+
+
 </div>
 
-
-
-</div>
 
 {% endblock %}
+<!--{% block scripts %}
+<script src="{{ url_for('static', filename='js/sceny.js') }}"></script>
+{% endblock %}-->

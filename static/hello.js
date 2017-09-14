@@ -200,7 +200,7 @@ function sliderChange(id,rejestr,modul_id,urzadzenia_id,urzadzenia_wartosc){
    
 
 
-      $('p#text'+modul_id).append('<p class="slider"><input type="range" id="bar'+modul_id+urzadzenia_id+'" min="0" max="100" step="1" value="'+urzadzenia_wartosc+'"></p>');
+      $('p#text'+modul_id).append('<input type="range" id="bar'+modul_id+urzadzenia_id+'" min="0" max="100" step="1" value="'+urzadzenia_wartosc+'">');
       $('p#text'+modul_id).append('<div class="costam slider">'+urzadzenia_wartosc+'%</div>');
 
    $(id).bind('click', function(event){  
