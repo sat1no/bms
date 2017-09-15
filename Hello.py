@@ -6,6 +6,9 @@ from forms import ContactForm, LoginForm, NewModuleForm, UrzadzeniaForm
 from models import Moduly, Urzadzenia
 from __init__ import app, db
 from modbusmaster import writeRegister, readRegisters
+from datetime import datetime
+import pytz
+from config import WARSAW
 
 
 
@@ -269,7 +272,7 @@ def moduly_get():
                 zapisPoOdczycie(all_modules[i].id,urzadzenie.rejestr,1)
 
     moduly = []
-    
+    date = datetime.now(tz=WARSAW).strftime('%Y-%m-%d %H:%M:%S')
     all_modules = Moduly.query.all()
     for modul in all_modules:
         
@@ -279,7 +282,7 @@ def moduly_get():
         
     
        
-    return jsonify({'moduly': moduly})
+    return jsonify({'moduly': moduly, 'date': date})
 
 
 #########################################################################################

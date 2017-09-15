@@ -1,4 +1,5 @@
 import os, random, string
+import pytz
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -11,6 +12,7 @@ SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(basedir, 'app.db')
 SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repository')
 SIJAX_STATIC_PATH = path
 SIJAX_JSON_URI = '/static/js/sijax/json2.js'
+WARSAW = pytz.timezone('Europe/Warsaw')
 
 OPENID_PROVIDERS = [
     {'name': 'Google', 'url': 'https://www.google.com/accounts/o8/id'},

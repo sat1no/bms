@@ -2,7 +2,7 @@
 
 {% block body %}
 
- <div class="progress main" id="contentLoading">
+ <!--<div class="progress main" id="contentLoading">
   <div class="progress-bar progress-bar-striped active" role="progressbar"
   aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width:1%">
     0%
@@ -19,7 +19,7 @@
   aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width:100%">
     100%
   </div>
-</div>
+</div>-->
  
 
   
@@ -29,7 +29,7 @@
 
 <div class="card border-success mb-3 main">
   <div class="card-header" data-spy="scroll" data-target="#list-example" data-offset="0" id="a{{ modul.id }}">{{ modul.name }}<a class='btn btn-light float-right' id='dodaj{{ modul.id }}'>+</a></div>
-  <div class="card-body text-success">
+  <div class="card-body">
     <h5 class="card-title">
     <p class="card-text" id='text{{ modul.id }}'>
     </p>
@@ -47,6 +47,9 @@
   <option value='0-100%'>0-100%</option>
   <option value='RGB'>RGB</option>
   <option value='tylko do odczytu'>Tylko do odczytu</option>
+  <option value='odczyt temperatura'>Odczyt temperatura</option>
+  <option value='odczyt cisnienie'>Odczyt cisnienie</option>
+  <!--dodac opcje -->
 </select>
 <input type='submit' value='Dodaj urzadzenie' style="display: none" id='submit{{ modul.id }}'/>
 </form>

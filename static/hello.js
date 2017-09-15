@@ -6,16 +6,16 @@ $(document).ready(function () {
 //
    working = false;
     $(document).ajaxStart(function(r, s) {
-        $("#contentLoading").show();
+     /*   $("#contentLoading").show();
          $("#contentLoading2").hide();
-        $("#ready").hide();
+        $("#ready").hide()*/;
         working = true;
     });
 
     $(document).ajaxStop(function(r, s) {
-        $("#contentLoading").hide();
-         $("#contentLoading2").hide();
-        $("#ready").show();
+        //$("#contentLoading").hide();
+        // $("#contentLoading2").hide();
+        //$("#ready").show();
         working = false;
     });
 
@@ -98,6 +98,8 @@ function update_task_table() {
             //alert(status);
             clear_text();
             var moduly = data.moduly;
+            var date = data.date;
+            
 
             for(var i = 0;i<moduly.length;i++){
                //for(var i = 0; i<moduly[i].urzadzenia.length;i++){
@@ -108,14 +110,14 @@ function update_task_table() {
                   
                   var urzadzenia = moduly[i].urzadzenia[j];
                   $('p#text'+(i+1)).append(urzadzenia.name+'<br>');
-                  $("#contentLoading").hide();
+/*                  $("#contentLoading").hide();
                   $("#ready").hide();
-                  $("#contentLoading2").show();
-                  if(urzadzenia.sterowanie != 'tylko do odczytu')$('p#text'+(i+1)).append('<a><div id="onoff'+modul_id+urzadzenia.id+'" class="on_off"></div></a>');
-                  else{valueChange(modul_id,urzadzenia.wartosc);}
+                  $("#contentLoading2").show()*/;
+                  if(urzadzenia.sterowanie != 'tylko do odczytu')$('p#text'+(i+1)).append('<a><p class="text-info datesize">'+date+'</p><div id="onoff'+modul_id+urzadzenia.id+'" class="on_off"></div></a>');
+                  else{valueChange(modul_id,urzadzenia.wartosc,date);}
                   RGB(urzadzenia.sterowanie,modul_id,urzadzenia.rejestr,urzadzenia.r,urzadzenia.g,urzadzenia.b);
-                  if(urzadzenia.sterowanie == '0-100%') sliderChange('#bar'+modul_id+urzadzenia.id,urzadzenia.rejestr,modul_id,urzadzenia.id,urzadzenia.wartosc);
-
+                  if(urzadzenia.sterowanie == '0-100%') sliderChange('#bar'+modul_id+urzadzenia.id,urzadzenia.rejestr,modul_id,urzadzenia.id,urzadzenia.wartosc,date);
+                  // dodac kolejne mozliwosci sterowania
                   
                   
 
@@ -146,7 +148,7 @@ function update_task_table() {
    
    
 }
-function valueChange(modul_id, wartosc){
+function valueChange(modul_id, wartosc, date){
    
    if (wartosc === null) wartosc = 0;
    
@@ -156,10 +158,10 @@ function valueChange(modul_id, wartosc){
    for (var i = 0, len = sNumber.length; i < len; i += 1) {
        output.push(+sNumber.charAt(i));
    }
-
-   if (output.length == 1) $('p#text'+modul_id).append('<div class="container"><p class="default-'+output[0]+'"></p></div>');
-   else if (output.length == 2) $('p#text'+modul_id).append('<div class="container"><p class="default-'+output[1]+'"></p><p class="default-'+output[0]+'"></p></div>');
-   else if (output.length == 3) $('p#text'+modul_id).append('<div class="container"><p class="default-'+output[2]+'"></p><p class="default-'+output[1]+'"></p><p class="default-'+output[0]+'"></p></div>');
+   
+   if (output.length == 1) $('p#text'+modul_id).append('<p class="text-info datesize">'+date+'</p><div class="container"><p class="default-'+output[0]+'"></p></div>');
+   else if (output.length == 2) $('p#text'+modul_id).append('<p class="text-info datesize">'+date+'</p><div class="container"><p class="default-'+output[1]+'"></p><p class="default-'+output[0]+'"></p></div>');
+   else if (output.length == 3) $('p#text'+modul_id).append('<p class="text-info datesize">'+date+'</p><div class="container"><p class="default-'+output[2]+'"></p><p class="default-'+output[1]+'"></p><p class="default-'+output[0]+'"></p></div>');
 }
 
 
@@ -196,11 +198,11 @@ function togClasses(id,class1,class2,rejestr,modul_id){
 
    }); 
 }
-function sliderChange(id,rejestr,modul_id,urzadzenia_id,urzadzenia_wartosc){
+function sliderChange(id,rejestr,modul_id,urzadzenia_id,urzadzenia_wartosc,date){
    
 
 
-      $('p#text'+modul_id).append('<input type="range" id="bar'+modul_id+urzadzenia_id+'" min="0" max="100" step="1" value="'+urzadzenia_wartosc+'">');
+      $('p#text'+modul_id).append('<input class="slider" type="range" id="bar'+modul_id+urzadzenia_id+'" min="0" max="100" step="1" value="'+urzadzenia_wartosc+'">');
       $('p#text'+modul_id).append('<div class="costam slider">'+urzadzenia_wartosc+'%</div>');
 
    $(id).bind('click', function(event){  
