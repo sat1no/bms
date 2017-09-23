@@ -306,13 +306,18 @@ img {
 	position: relative;
 	top: 0px;
 	left: 0px;
-	background: url(../images/default-0.png);
-	background-size: cover;
+/*	background: url(../images/default-0.png);*/
+	
+/*	background-size: cover;*/
 	float: right;
 	overflow: hidden;
-	width: 29px;
-	height: 32px;
+/*	width: 29px;
+	height: 32px;*/
 	
+}
+li.right {
+    position: absolute;
+    right: 0;
 }
 .default-1{
 	position: relative;

@@ -1,5 +1,13 @@
 {% extends 'layout.html' %}
-
+{% block lista %}
+{% for modul in Moduly %}
+<li class="li">
+   <a href="#a{{ modul.id }}">
+      {{ modul.name }}
+   </a>
+</li>
+{% endfor %}
+{% endblock %}
 {% block body %}
 
  <!--<div class="progress main" id="contentLoading">
@@ -49,6 +57,7 @@
   <option value='tylko do odczytu'>Tylko do odczytu</option>
   <option value='odczyt temperatura'>Odczyt temperatura</option>
   <option value='odczyt cisnienie'>Odczyt cisnienie</option>
+  <option value='odczyt wilgotnosc'>Odczyt wilgotnosc</option>
   <!--dodac opcje -->
 </select>
 <input type='submit' value='Dodaj urzadzenie' style="display: none" id='submit{{ modul.id }}'/>
@@ -57,9 +66,9 @@
 {% endfor %}
 
          <center>
-        <a href="/addrec">
-           <button class="btn btn-info btn-block">Dodaj modul</button>
-        </a>
+   <a href="/addrec">
+           <button id="dodajmodul" class="btn btn-info btn-block main" onclick="wyslijAddress()">Dodaj modul</button>
+   </a>
          </center>
 {% endblock %}
 {% block scripts %}

@@ -22,11 +22,23 @@ def zapisPoOdczycie(address, rejestrPoczatkowy, liczbaRejestrow):
     a = readRegisters(address,rejestrPoczatkowy,liczbaRejestrow)
     if a != -1:
         urzadzenie = Urzadzenia.query.filter_by(modul_id = address, rejestr = rejestrPoczatkowy).first()
-        if len(a) == 1 and urzadzenie.sterowanie != "tylko do odczytu":
+        if len(a) == 1 and urzadzenie.sterowanie == "on/off":
             urzadzenie.stan = a[0]
             
             db.session.commit()
         elif len(a) == 1 and urzadzenie.sterowanie == "tylko do odczytu":
+            urzadzenie.wartosc = a[0]
+            
+            db.session.commit()
+        elif len(a) == 1 and urzadzenie.sterowanie == "odczyt cisnienie":
+            urzadzenie.wartosc = a[0]
+            
+            db.session.commit()
+        elif len(a) == 1 and urzadzenie.sterowanie == "odczyt wilgotnosc":
+            urzadzenie.wartosc = a[0]
+            
+            db.session.commit()
+        elif len(a) == 1 and urzadzenie.sterowanie == "odczyt temperatura":
             urzadzenie.wartosc = a[0]
             
             db.session.commit()
@@ -97,8 +109,10 @@ def prepare_for_json3(_modul):
 def index():
     if 'username' in session:
         username = session['username']
-        liczba_modulow = len(Moduly.query.all())
-        return render_template('main.html', Moduly = Moduly.query.all(), Urzadzenia = Urzadzenia.query.all(),liczba_modulow = liczba_modulow)
+        password = session['password']
+        if username == 'bms' and password == 'bms':
+            liczba_modulow = len(Moduly.query.all())
+            return render_template('main.html', Moduly = Moduly.query.all(), Urzadzenia = Urzadzenia.query.all(),liczba_modulow = liczba_modulow)
     return redirect(url_for('login'))
 
 
@@ -122,6 +136,7 @@ def login():
         session['password'] = request.form['password']
         if session['username'] == 'bms' and session['password'] == 'bms':
             flash("Zalogowano pomyslnie","success")
+            
             return redirect(url_for('index'))
         else:
             flash("Zly login lub haslo", "warning")
@@ -160,7 +175,7 @@ def addrec():
             db.session.commit()                                             ## dodanie instacji Moduly do bazy
             
             flash('record successfully added')
-            return redirect(url_for('list'))
+            return redirect(url_for('index'))
         else:
             return redirect(url_for('addrec'))
     elif request.method == 'GET': ## Po wejsciu przyciskiem z list.html
@@ -221,7 +236,7 @@ def zapis():
         return render_template('editmodule.html',form = form, edit = edit)
         
  #########################################################################################
-        ###########################HOME#####################################
+        ###########################LISTY#####################################
 #########################################################################################
          
     
@@ -229,6 +244,11 @@ def zapis():
 def list():
 
     return render_template("list.html", Moduly = Moduly.query.all())
+
+@app.route('/list2', methods = ['POST','GET'])
+def list2():
+
+    return render_template("list2.html", Moduly = Moduly.query.all())
         
 
 #########################################################################################
@@ -339,13 +359,41 @@ def moduly_post():
         
         if wyslij == 1:
             db.session.commit()
-           
+    elif ('address' in zadanie):
         
+        wyslij = writeRegister(0,0,request.json['address']) 
+        
+        if wyslij == 1:
+            print "dziala"
 
 
         
     return Response(status=200)
 
+#########################################################################################
+        ###########################DELETE#####################################
+#########################################################################################
+
+@app.route('/moduly', methods = ['DELETE'])
+def moduly_delete():
+    if (request.json['rejestr'] == 0):
+        modul = Moduly.query.filter_by(id = request.json['modul']).first()
+        for urzadzenie in modul.urzadzenia.all():
+            db.session.delete(urzadzenie)
+        db.session.delete(modul)
+        db.session.commit()
+        return Response(status=200)
+        
+    else:
+        urzadzenie = Urzadzenia.query.filter_by(modul_id = request.json['modul'], rejestr = request.json['rejestr']).first()
+        
+        db.session.delete(urzadzenie)
+        db.session.commit()
+        return Response(status=200)
+
+#########################################################################################
+        ###########################SCENY#####################################
+#########################################################################################
 @app.route('/sceny', methods = ['GET'])
 def scena():
     return render_template('sceny.html', Moduly = Moduly.query.all())

@@ -115,7 +115,9 @@
 					preview: $(this).parent().parent().data('colorpicker').livePreview					
 				};
 				$(document).bind('mouseup', current, upIncrement);
+				$(document).bind('touchend', current, upIncrement);
 				$(document).bind('mousemove', current, moveIncrement);
+				$(document).bind('touchmove', current, moveIncrement);
 			},
 			moveIncrement = function (ev) {
 				ev.data.field.val(Math.max(0, Math.min(ev.data.max, parseInt(ev.data.val + ev.pageY - ev.data.y, 10))));
@@ -128,7 +130,9 @@
 				change.apply(ev.data.field.get(0), [true]);
 				ev.data.el.removeClass('colorpicker_slider').find('input').focus();
 				$(document).unbind('mouseup', upIncrement);
+				$(document).unbind('touchend', upIncrement);
 				$(document).unbind('mousemove', moveIncrement);
+				$(document).unbind('touchmove', moveIncrement);
 				return false;
 			},
 			downHue = function (ev) {
@@ -138,7 +142,9 @@
 				};
 				current.preview = current.cal.data('colorpicker').livePreview;
 				$(document).bind('mouseup', current, upHue);
+				$(document).bind('touchend', current, upHue);
 				$(document).bind('mousemove', current, moveHue);
+				$(document).bind('touchmove', current, moveHue);
 			},
 			moveHue = function (ev) {
 				change.apply(
@@ -155,7 +161,9 @@
 				fillRGBFields(ev.data.cal.data('colorpicker').color, ev.data.cal.get(0));
 				fillHexFields(ev.data.cal.data('colorpicker').color, ev.data.cal.get(0));
 				$(document).unbind('mouseup', upHue);
+				$(document).unbind('touchend', upHue);
 				$(document).unbind('mousemove', moveHue);
+				$(document).unbind('touchmove', moveHue);
 				return false;
 			},
 			downSelector = function (ev) {
@@ -165,7 +173,9 @@
 				};
 				current.preview = current.cal.data('colorpicker').livePreview;
 				$(document).bind('mouseup', current, upSelector);
+				$(document).bind('touchend', current, upSelector);
 				$(document).bind('mousemove', current, moveSelector);
+				$(document).bind('touchmove', current, moveSelector);
 			},
 			moveSelector = function (ev) {
 				change.apply(
@@ -185,7 +195,9 @@
 				fillRGBFields(ev.data.cal.data('colorpicker').color, ev.data.cal.get(0));
 				fillHexFields(ev.data.cal.data('colorpicker').color, ev.data.cal.get(0));
 				$(document).unbind('mouseup', upSelector);
+				$(document).unbind('touchend', upSelector);
 				$(document).unbind('mousemove', moveSelector);
+				$(document).unbind('touchmove', moveSelector);
 				return false;
 			},
 			enterSubmit = function (ev) {
@@ -219,6 +231,7 @@
 					cal.show();
 				}
 				$(document).bind('mousedown', {cal: cal}, hide);
+				$(document).bind('touchstart', {cal: cal}, hide);
 				return false;
 			},
 			hide = function (ev) {
@@ -227,6 +240,7 @@
 						ev.data.cal.hide();
 					}
 					$(document).unbind('mousedown', hide);
+					$(document).unbind('touchstart', hide);
 				}
 			},
 			isChildOf = function(parentEl, el, container) {
@@ -402,20 +416,23 @@
 												.bind('blur', blur)
 												.bind('focus', focus);
 						cal
-							.find('span').bind('mousedown', downIncrement).end()
+							.find('span').bind('mousedown', downIncrement).bind('touchstart', downIncrement).end()
 							.find('>div.colorpicker_current_color').bind('click', restoreOriginal);
-						options.selector = cal.find('div.colorpicker_color').bind('mousedown', downSelector);
+							
+						options.selector = cal.find('div.colorpicker_color').bind('mousedown', downSelector).bind('touchstart', downSelector);
 						options.selectorIndic = options.selector.find('div div');
 						options.el = this;
 						options.hue = cal.find('div.colorpicker_hue div');
-						cal.find('div.colorpicker_hue').bind('mousedown', downHue);
+						cal.find('div.colorpicker_hue').bind('mousedown', downHue).bind('touchstart', downHue);
 						options.newColor = cal.find('div.colorpicker_new_color');
 						options.currentColor = cal.find('div.colorpicker_current_color');
 						cal.data('colorpicker', options);
 						cal.find('div.colorpicker_submit')
 							.bind('mouseenter', enterSubmit)
+							.bind('touchenter', enterSubmit)
 							.bind('mouseleave', leaveSubmit)
-							.bind('click', clickSubmit);
+							.bind('touchleave', leaveSubmit)
+							.bind('click', clickSubmit)
 						fillRGBFields(options.color, cal.get(0));
 						fillHSBFields(options.color, cal.get(0));
 						fillHexFields(options.color, cal.get(0));

@@ -1,30 +1,16 @@
 
 $(document).ready(function () {
-   
-//  
-//load the content initially
-//
-   working = false;
-    $(document).ajaxStart(function(r, s) {
-     /*   $("#contentLoading").show();
-         $("#contentLoading2").hide();
-        $("#ready").hide()*/;
-        working = true;
+"use strict";
+
+
+    $(document).ajaxStart(function() {
+
+       
     });
 
-    $(document).ajaxStop(function(r, s) {
-        //$("#contentLoading").hide();
-        // $("#contentLoading2").hide();
-        //$("#ready").show();
-        working = false;
-    });
+    $(document).ajaxStop(function() {
 
-    //$('#form').submit(function() {
-    //    if (working) return;
-    //    $.post('/some/url', $(this).serialize(), function(data){
-    //        alert(data);
-    //    });
-    //});
+    });
 
    update_task_table();
 
@@ -33,14 +19,15 @@ $(document).ready(function () {
 //TWORZENIE EVENTU DLA KAZDEGO PRZYCISKU DODOWANIA URZADZEN
 //
    
-   for(let i = 0; i < $('#liczba_modulow').val(); i++){
+   for(let i = 0; i < $("#liczba_modulow").val(); i++){
       
 
-      $('#dodaj'+(i+1)).click(function (event){
+      $("#dodaj"+(i+1)).click(function (event){
         
          //UKRYWANIE POL FORMULARZA
-         $('#nazwa'+(i+1)).toggle();
-         $('#rejestr'+(i+1)).toggle();
+         $("#nazwa"+(i+1)).toggle().val('');
+         $('input#rejestr'+(i+1)).css("background-color", "white").val('');
+         $('#rejestr'+(i+1)).toggle().val('');
          $('#submit'+(i+1)).toggle();
          $('#sterowanie'+(i+1)).toggle();
       });
@@ -55,18 +42,38 @@ $(document).ready(function () {
       
       
       $('#post'+(i+1)).submit(function (event) {
+         //$.get("/moduly", function(data){
+         //   modul = data.moduly
+         //      var iloscUrzadzen = Object.size(modul[i+1].urzadzenia);
+         //      
+         //      for(var k = 0;k<iloscUrzadzen;k++){
+         //         var urzadzenie = modul[i+1].urzadzenia[k];
+         //         if (urzadzenie.rejestr == $("input#rejestr"+(i+1)).val()) alert('zajete')
+         //      }
+         //
+         //});
+
+         //alert(data);
          
-         //check valid
+         //$("input#rejestr"+(i+1)).val()
+         //$("input#nazwa"+(i+1)).val()
          
+         $('input#rejestr'+(i+1)).css("background-color", "white")
+         let nazwa = $("input#nazwa"+(i+1)).val();
+         let rejestr;
+         if (isNumber($("input#rejestr"+(i+1)).val())){
+            rejestr = $("input#rejestr"+(i+1)).val();
+         }
+         else {event.preventDefault();
+         $('input#rejestr'+(i+1)).css("background-color", "red")
+         return}
+         let id_modul = $("input#id_modul"+(i+1)).val();
+         
+         let sterowanie = $("#sterowanie"+(i+1)).val();
          $('input#nazwa'+(i+1)).toggle();
          $('input#rejestr'+(i+1)).toggle();
          $('input#submit'+(i+1)).toggle();
          $('#sterowanie'+(i+1)).toggle();
-         let nazwa = $("input#nazwa"+(i+1)).val();
-         let rejestr = $("input#rejestr"+(i+1)).val();
-         let id_modul = $("input#id_modul"+(i+1)).val();
-         let sterowanie = $("#sterowanie"+(i+1)).val();
-      
          event.preventDefault();
          let json = {nazwa: nazwa, rejestr:rejestr, id_modul:id_modul, sterowanie:sterowanie};
          ajaxPost(json);
@@ -76,11 +83,12 @@ $(document).ready(function () {
       
    
    
-   
+
    
 //   
 //FUNKCJE   
 //
+function isNumber(obj) { return !isNaN(parseInt(obj)) }
 
 function update_task_table() {
    
@@ -113,8 +121,10 @@ function update_task_table() {
 /*                  $("#contentLoading").hide();
                   $("#ready").hide();
                   $("#contentLoading2").show()*/;
-                  if(urzadzenia.sterowanie != 'tylko do odczytu')$('p#text'+(i+1)).append('<a><p class="text-info datesize">'+date+'</p><div id="onoff'+modul_id+urzadzenia.id+'" class="on_off"></div></a>');
-                  else{valueChange(modul_id,urzadzenia.wartosc,date);}
+                  if(urzadzenia.sterowanie != 'tylko do odczytu' && urzadzenia.sterowanie != 'odczyt temperatura' && urzadzenia.sterowanie != 'odczyt cisnienie' && urzadzenia.sterowanie != 'odczyt wilgotnosc')
+                  $('p#text'+(i+1)).append('<a><p class="text-info datesize">'+date+'</p><div id="onoff'+modul_id+urzadzenia.id+'" class="on_off"></div></a>');
+                  if(urzadzenia.sterowanie == 'tylko do odczytu' || urzadzenia.sterowanie == 'odczyt temperatura' || urzadzenia.sterowanie == 'odczyt cisnienie' || urzadzenia.sterowanie == 'odczyt wilgotnosc')valueChange(modul_id,urzadzenia.wartosc,date,urzadzenia.sterowanie);
+                  
                   RGB(urzadzenia.sterowanie,modul_id,urzadzenia.rejestr,urzadzenia.r,urzadzenia.g,urzadzenia.b);
                   if(urzadzenia.sterowanie == '0-100%') sliderChange('#bar'+modul_id+urzadzenia.id,urzadzenia.rejestr,modul_id,urzadzenia.id,urzadzenia.wartosc,date);
                   // dodac kolejne mozliwosci sterowania
@@ -140,7 +150,7 @@ function update_task_table() {
               
               
               setTimeout(update_task_table, 1500);
-            return false;
+            
             }
          
      });
@@ -148,20 +158,33 @@ function update_task_table() {
    
    
 }
-function valueChange(modul_id, wartosc, date){
+function valueChange(modul_id, wartosc, date, sterowanie){
    
    if (wartosc === null) wartosc = 0;
    
-    output = [];
-    sNumber = wartosc.toString();
-
-   for (var i = 0, len = sNumber.length; i < len; i += 1) {
-       output.push(+sNumber.charAt(i));
-   }
+   if (sterowanie == 'tylko do odczytu'){
+      sNumber = wartosc.toString();
+      $('p#text'+modul_id).append('<p class="text-info datesize">'+date+'</p><div class="container"><p class="default-0">'+sNumber+'</p></div>');}
+      
+   else if (sterowanie == 'odczyt temperatura'){
+      sNumber = wartosc.toString();
+      $('p#text'+modul_id).append('<p class="text-info datesize">'+date+'</p><div class="container"><p class="default-0">'+sNumber+'&deg;C'+'</p></div>');}
+      
+   else if (sterowanie == 'odczyt cisnienie'){
+      sNumber = wartosc.toString();
+      $('p#text'+modul_id).append('<p class="text-info datesize">'+date+'</p><div class="container"><p class="default-0">'+sNumber+'hPa'+'</p></div>');}
+      
+   else if (sterowanie == 'odczyt wilgotnosc'){
+      sNumber = wartosc.toString();
+      $('p#text'+modul_id).append('<p class="text-info datesize">'+date+'</p><div class="container"><p class="default-0">'+sNumber+'%RH'+'</p></div>');}   
+   //output = [];
+   //for (var i = 0, len = sNumber.length; i < len; i += 1) {
+   //    output.push(+sNumber.charAt(i));
+   //}
    
-   if (output.length == 1) $('p#text'+modul_id).append('<p class="text-info datesize">'+date+'</p><div class="container"><p class="default-'+output[0]+'"></p></div>');
-   else if (output.length == 2) $('p#text'+modul_id).append('<p class="text-info datesize">'+date+'</p><div class="container"><p class="default-'+output[1]+'"></p><p class="default-'+output[0]+'"></p></div>');
-   else if (output.length == 3) $('p#text'+modul_id).append('<p class="text-info datesize">'+date+'</p><div class="container"><p class="default-'+output[2]+'"></p><p class="default-'+output[1]+'"></p><p class="default-'+output[0]+'"></p></div>');
+   //if (output.length == 1) $('p#text'+modul_id).append('<p class="text-info datesize">'+date+'</p><div class="container"><p class="default-'+output[0]+'"></p></div>');
+   //else if (output.length == 2) $('p#text'+modul_id).append('<p class="text-info datesize">'+date+'</p><div class="container"><p class="default-'+output[1]+'"></p><p class="default-'+output[0]+'"></p></div>');
+   //else if (output.length == 3) $('p#text'+modul_id).append('<p class="text-info datesize">'+date+'</p><div class="container"><p class="default-'+output[2]+'"></p><p class="default-'+output[1]+'"></p><p class="default-'+output[0]+'"></p></div>');
 }
 
 
@@ -205,14 +228,17 @@ function sliderChange(id,rejestr,modul_id,urzadzenia_id,urzadzenia_wartosc,date)
       $('p#text'+modul_id).append('<input class="slider" type="range" id="bar'+modul_id+urzadzenia_id+'" min="0" max="100" step="1" value="'+urzadzenia_wartosc+'">');
       $('p#text'+modul_id).append('<div class="costam slider">'+urzadzenia_wartosc+'%</div>');
 
-   $(id).bind('click', function(event){  
+   $(id).bind('input change', function(event){  
       var value = $(this).val();
-
+      if($.active > 0){ 
+      getrequest.abort();
+      }
       $('.costam').empty();
       $('.costam').append(value+'%');
       value = parseInt(value);
       var json = {rejestr: rejestr, modul_id: modul_id, wartosc: value};
       ajaxPost(json);
+      return false;
       
       });
 }
@@ -244,6 +270,7 @@ function RGB(sterowanie,modul_id,rejestr,r,g,b){
       if (true){
          $('.rgb'+modul_id).ColorPicker({
          color: {r: r, g: g,b: b},
+         //eventName: 'touchstart',
          onShow: function (colpkr) {
             $(colpkr).fadeIn(500);
                if($.active > 0){ 
@@ -264,7 +291,7 @@ function RGB(sterowanie,modul_id,rejestr,r,g,b){
             if($.active > 0){ 
                getrequest.abort();
             }
-            return false;
+           
          },
          
          onSubmit: function (hsb, hex, rgb) {
@@ -296,4 +323,31 @@ function ajaxPost(json){
            success: function () {}
            });
       
+}
+function ajaxGet(){
+   
+      if($.active > 0){ 
+      getrequest.abort();
+   }
+   
+   $.ajax(
+         '/moduly',
+   {
+      method: "GET",
+      dataType: "json",
+      success: function(data, status) {
+      alert(data.moduly);
+      return data.moduly;   
+      }
+   })
+}
+
+function wyslijAddress(){
+   var address = $('#liczba_modulow').val();
+   var nowyaddress = parseInt(address) + 1;
+   var json = {address: nowyaddress};
+   
+   //alert(nowyaddress);
+   ajaxPost(json);
+   
 }

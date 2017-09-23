@@ -9,7 +9,7 @@ import modbus_tk.defines as cst
 import modbus_tk.modbus_rtu as modbus_rtu
 
 
-# logger = modbus_tk.utils.create_logger("console")
+logger = modbus_tk.utils.create_logger("console")
 
 
 

@@ -1,0 +1,33 @@
+<!doctype html>
+
+      {% extends 'layout.html' %}   
+      {% block body %}
+
+
+         <table class="table table-striped table-bordered table-sm table-responsive main">
+            <thead class="thead-inverse">
+               <tr>
+                  <th class='text-center'>Adres</th>
+                  <th class='text-center'>Nazwa</th>
+                  <th class='text-center'>Usun</th>
+               </tr>
+            </thead>
+            <tbody>
+               {% for modul in Moduly %}
+                     <tr>
+                        <td class='text-center'>{{ modul.id }}</td>
+                        <td class='text-center'>{{ modul.name }}</td>
+                        <td><button id="deletemodul{{ modul.id }}"class='btn btn-danger btn-block' onclick='ajaxDelete(0, {{ modul.id }})'>X</button></td>
+                     </tr>
+               {% endfor %}
+            </tbody>
+         </table>
+
+         <br>
+      {% endblock %}
+{% block scripts %}
+
+<script src="{{url_for('static', filename='js/list.js')}}"></script>
+
+{% endblock %}
+
