@@ -187,6 +187,110 @@
 	transform: scale(0.7,0.7);
 	
 }
+
+.flame {
+	position: relative;
+	top: 0px;
+	left: 0px;
+	width: 50px;
+	height: 53px;
+	background: url(../images/flame.png);
+	background-size: cover;
+	float: right;
+	overflow: visible;
+	transform: scale(1,1);
+
+}
+#alerts{
+
+	width: 1000px;
+    height:60px;
+    position:relative;
+/*    border:1px solid white;*/
+/*	border-radius: 20px;*/
+}
+
+@media only screen and (max-width: 1500px){
+    #alerts { width: 730px; }
+}
+@media only screen and (max-width: 750px){
+    #alerts { width: 355px; }
+}
+@media only screen and (max-width: 375px){
+    #alerts { width: 166px; }
+}
+
+.top{top:0}
+.middle{top:50%;margin-top:-10px;/*half of the .box height*/}
+.bottom{bottom:0}
+
+.left{left:0;}
+.center{left:50%;margin-left:-10px;/*half of the .box width*/}
+.right{right:0;}
+
+.flameicon{
+	position: absolute;
+
+	width: 50px;
+	height: 53px;
+	background: url(../images/flame.png);
+	background-size: cover;
+
+}
+.kontaktron {
+	position: relative;
+	top: 0px;
+	left: 0px;
+	width: 50px;
+	height: 53px;
+	background: url(../images/kontaktron.png) left;
+	background-size: cover;
+	float: right;
+	overflow: visible;
+	transform: scale(1,1);
+
+}
+
+.kontaktron2 {
+	position: relative;
+	top: 0px;
+	left: 0px;
+	width: 50px;
+	height: 53px;
+	background: url(../images/kontaktron.png) right;
+	background-size: cover;
+	float: right;
+	overflow: visible;
+	transform: scale(1,1);
+
+}
+.pir {
+	position: relative;
+	top: 0px;
+	left: 0px;
+	width: 50px;
+	height: 50px;
+	background: url(../images/pir.png);
+	background-size: cover;
+	float: right;
+	overflow: visible;
+	transform: scale(1,1);
+
+}
+.pirruch {
+	position: relative;
+	top: 0px;
+	left: 0px;
+	width: 50px;
+	height: 50px;
+	background: url(../images/pirruch.png);
+	background-size: cover;
+	float: right;
+	overflow: visible;
+	transform: scale(1,1);
+
+}
+
 .slider {
 	position:relative;
 	left:10px;

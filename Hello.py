@@ -5,7 +5,7 @@ from werkzeug import secure_filename
 from forms import ContactForm, LoginForm, NewModuleForm, UrzadzeniaForm
 from models import Moduly, Urzadzenia
 from __init__ import app, db
-from modbusmaster import writeRegister, readRegisters
+from modbusmaster import writeRegister, readRegisters, writeMultipleRegisters
 from datetime import datetime
 import pytz
 from config import WARSAW
@@ -26,22 +26,26 @@ def zapisPoOdczycie(address, rejestrPoczatkowy, liczbaRejestrow):
             urzadzenie.stan = a[0]
             
             db.session.commit()
-        elif len(a) == 1 and urzadzenie.sterowanie == "tylko do odczytu":
+        # elif len(a) == 1 and urzadzenie.sterowanie == "tylko do odczytu":
+        #     urzadzenie.wartosc = a[0]
+        #     
+        #     db.session.commit()
+        # elif len(a) == 1 and urzadzenie.sterowanie == "odczyt cisnienie":
+        #     urzadzenie.wartosc = a[0]
+        #     
+        #     db.session.commit()
+        # elif len(a) == 1 and urzadzenie.sterowanie == "odczyt wilgotnosc":
+        #     urzadzenie.wartosc = a[0]
+        #     
+        #     db.session.commit()
+        elif len(a) == 1 and (urzadzenie.sterowanie == "odczyt temperatura" or "odczyt prad" or "odczyt wilgotnosc" or "odczyt cisnienie" or "tylko do odczytu" or "odczyt PIR"):
             urzadzenie.wartosc = a[0]
             
             db.session.commit()
-        elif len(a) == 1 and urzadzenie.sterowanie == "odczyt cisnienie":
-            urzadzenie.wartosc = a[0]
-            
-            db.session.commit()
-        elif len(a) == 1 and urzadzenie.sterowanie == "odczyt wilgotnosc":
-            urzadzenie.wartosc = a[0]
-            
-            db.session.commit()
-        elif len(a) == 1 and urzadzenie.sterowanie == "odczyt temperatura":
-            urzadzenie.wartosc = a[0]
-            
-            db.session.commit()
+        # elif len(a) == 1 and urzadzenie.sterowanie == "odczyt prad":
+        #     urzadzenie.wartosc = a[0]
+        #     
+        #     db.session.commit()
         elif len(a) == 2:
             urzadzenie.stan = a[0]
             urzadzenie.wartosc = a[1]
@@ -167,7 +171,8 @@ def addrec():
     if request.method == 'POST':    ## Po kliknieciu submit w newmodule.html
         if form.validate_on_submit(): ## warunki w forms.py
 
-            modul = Moduly(name=request.form['name']) ## Nowa instancja klasy Moduly
+            modul = Moduly(name=request.form['name'], id = request.form['id'])
+            ## Nowa instancja klasy Moduly
                                                                           ## zainicjowana przy uzyciu danych z
                                                                           ## formularza newmodule.html
             
@@ -333,11 +338,14 @@ def moduly_post():
         
         
         
-        wyslij = writeRegister(request.json['modul_id'],request.json['rejestr']+1,request.json['r'])
-        wyslij2 = writeRegister(request.json['modul_id'],request.json['rejestr']+2,request.json['g'])
-        wyslij3 = writeRegister(request.json['modul_id'],request.json['rejestr']+3,request.json['b'])
+        # wyslij = writeRegister(request.json['modul_id'],request.json['rejestr']+1,request.json['r'])
+        # wyslij2 = writeRegister(request.json['modul_id'],request.json['rejestr']+2,request.json['g'])
+        # wyslij3 = writeRegister(request.json['modul_id'],request.json['rejestr']+3,request.json['b'])
         
-        if wyslij == 1 and wyslij2 == 1 and wyslij3 == 1:
+        wyslij = writeMultipleRegisters(request.json['modul_id'], request.json['rejestr'], [1,request.json['r'],request.json['g'],request.json['b']])
+        
+        
+        if wyslij == 1:
             db.session.commit()
         
 
@@ -404,7 +412,6 @@ def scena():
 
 if __name__ == '__main__':
     db.create_all()
-    app.run(debug = True, host='192.168.0.94')
-    
+    app.run(debug = True, host='10.7.0.235')  
 
 

@@ -18,20 +18,26 @@ $(document).ready(function () {
 //
 //TWORZENIE EVENTU DLA KAZDEGO PRZYCISKU DODOWANIA URZADZEN
 //
-   
+  $.get( "/moduly", function(data) { 
    for(let i = 0; i < $("#liczba_modulow").val(); i++){
-      
-
-      $("#dodaj"+(i+1)).click(function (event){
+   
+   
+         
+         $("#dodaj"+data.moduly[i].id).click(function (event){
         
          //UKRYWANIE POL FORMULARZA
-         $("#nazwa"+(i+1)).toggle().val('');
-         $('input#rejestr'+(i+1)).css("background-color", "white").val('');
-         $('#rejestr'+(i+1)).toggle().val('');
-         $('#submit'+(i+1)).toggle();
-         $('#sterowanie'+(i+1)).toggle();
+         $("#nazwa"+data.moduly[i].id).toggle().val('');
+         $('input#rejestr'+data.moduly[i].id).css("background-color", "white").val('');
+         $('#rejestr'+data.moduly[i].id).toggle().val('');
+         $('#submit'+data.moduly[i].id).toggle();
+         $('#sterowanie'+data.moduly[i].id).toggle();
       });
    }
+   
+
+
+
+
 
 
 //
@@ -40,8 +46,12 @@ $(document).ready(function () {
          
    for(let i = 0; i < $('#liczba_modulow').val(); i++){
       
+
       
-      $('#post'+(i+1)).submit(function (event) {
+      
+     
+      $('#post'+data.moduly[i].id).submit(function (event) {
+         
          //$.get("/moduly", function(data){
          //   modul = data.moduly
          //      var iloscUrzadzen = Object.size(modul[i+1].urzadzenia);
@@ -59,28 +69,29 @@ $(document).ready(function () {
          //$("input#nazwa"+(i+1)).val()
          
          $('input#rejestr'+(i+1)).css("background-color", "white")
-         let nazwa = $("input#nazwa"+(i+1)).val();
+         let nazwa = $("input#nazwa"+data.moduly[i].id).val();
          let rejestr;
-         if (isNumber($("input#rejestr"+(i+1)).val())){
-            rejestr = $("input#rejestr"+(i+1)).val();
+         if (isNumber($("input#rejestr"+data.moduly[i].id).val())){
+            rejestr = $("input#rejestr"+data.moduly[i].id).val();
          }
          else {event.preventDefault();
-         $('input#rejestr'+(i+1)).css("background-color", "red")
+         $('input#rejestr'+data.moduly[i].id).css("background-color", "red")
          return}
-         let id_modul = $("input#id_modul"+(i+1)).val();
+         let id_modul = $("input#id_modul"+data.moduly[i].id).val();
          
-         let sterowanie = $("#sterowanie"+(i+1)).val();
-         $('input#nazwa'+(i+1)).toggle();
-         $('input#rejestr'+(i+1)).toggle();
-         $('input#submit'+(i+1)).toggle();
-         $('#sterowanie'+(i+1)).toggle();
+         let sterowanie = $("#sterowanie"+data.moduly[i].id).val();
+         $('input#nazwa'+data.moduly[i].id).toggle();
+         $('input#rejestr'+data.moduly[i].id).toggle();
+         $('input#submit'+data.moduly[i].id).toggle();
+         $('#sterowanie'+data.moduly[i].id).toggle();
          event.preventDefault();
          let json = {nazwa: nazwa, rejestr:rejestr, id_modul:id_modul, sterowanie:sterowanie};
          ajaxPost(json);
       });
    }
-});     
-      
+});
+});
+   
    
    
 
@@ -117,21 +128,22 @@ function update_task_table() {
                for(var j = 0;j<iloscUrzadzen;j++){
                   
                   var urzadzenia = moduly[i].urzadzenia[j];
-                  $('p#text'+(i+1)).append(urzadzenia.name+'<br>');
+                  if (urzadzenia.sterowanie !== 'odczyt pozar')$('p#text'+modul_id).append(urzadzenia.name+'<br>');
 /*                  $("#contentLoading").hide();
                   $("#ready").hide();
                   $("#contentLoading2").show()*/;
-                  if(urzadzenia.sterowanie != 'tylko do odczytu' && urzadzenia.sterowanie != 'odczyt temperatura' && urzadzenia.sterowanie != 'odczyt cisnienie' && urzadzenia.sterowanie != 'odczyt wilgotnosc')
-                  $('p#text'+(i+1)).append('<a><p class="text-info datesize">'+date+'</p><div id="onoff'+modul_id+urzadzenia.id+'" class="on_off"></div></a>');
-                  if(urzadzenia.sterowanie == 'tylko do odczytu' || urzadzenia.sterowanie == 'odczyt temperatura' || urzadzenia.sterowanie == 'odczyt cisnienie' || urzadzenia.sterowanie == 'odczyt wilgotnosc')valueChange(modul_id,urzadzenia.wartosc,date,urzadzenia.sterowanie);
+                  if(urzadzenia.sterowanie == 'on/off')
+                  $('p#text'+modul_id).append('<a><p class="text-info datesize">'+date+'</p><div id="onoff'+modul_id+urzadzenia.id+'" class="on_off"></div></a>');
+                  if(urzadzenia.sterowanie == 'tylko do odczytu' || 'odczyt temperatura' || 'odczyt cisnienie' || 'odczyt wilgotnosc' || 'odczyt prad' || 'odczyt kontaktron' || 'odczyt PIR' || 'odczyt co2')
+                  valueChange(modul_id,urzadzenia.wartosc,date,urzadzenia.sterowanie);
                   
-                  RGB(urzadzenia.sterowanie,modul_id,urzadzenia.rejestr,urzadzenia.r,urzadzenia.g,urzadzenia.b);
+                  RGB(urzadzenia.sterowanie,modul_id,urzadzenia.rejestr,urzadzenia.r,urzadzenia.g,urzadzenia.b,date);
                   if(urzadzenia.sterowanie == '0-100%') sliderChange('#bar'+modul_id+urzadzenia.id,urzadzenia.rejestr,modul_id,urzadzenia.id,urzadzenia.wartosc,date);
                   // dodac kolejne mozliwosci sterowania
                   
                   
 
-                  $('p#text'+(i+1)).append('<br><br><br>');
+                  if (urzadzenia.sterowanie !== 'odczyt pozar')$('p#text'+modul_id).append('<br><br><br>');
                   togClasses('#onoff'+modul_id+urzadzenia.id,'on_off','on_off2', urzadzenia.rejestr, modul_id);
                   if (urzadzenia.stan > 0){
                      
@@ -166,17 +178,49 @@ function valueChange(modul_id, wartosc, date, sterowanie){
       sNumber = wartosc.toString();
       $('p#text'+modul_id).append('<p class="text-info datesize">'+date+'</p><div class="container"><p class="default-0">'+sNumber+'</p></div>');}
       
+   else if (sterowanie == 'odczyt kontaktron'){
+      console.log(wartosc);
+      if (wartosc == 0) $('p#text'+modul_id).append('<p class="text-info datesize">'+date+'</p><div class="kontaktron"></div>');
+      else $('p#text'+modul_id).append('<p class="text-info datesize">'+date+'</p><div class="kontaktron2"></div>');}
+      
+   else if (sterowanie == 'odczyt PIR'){
+      console.log(wartosc);
+      if (wartosc == 0) $('p#text'+modul_id).append('<p class="text-info datesize">'+date+'</p><div class="pir"></div>');
+      else $('p#text'+modul_id).append('<p class="text-info datesize">'+date+'</p><div class="pirruch"></div>');}
+       
    else if (sterowanie == 'odczyt temperatura'){
       sNumber = wartosc.toString();
-      $('p#text'+modul_id).append('<p class="text-info datesize">'+date+'</p><div class="container"><p class="default-0">'+sNumber+'&deg;C'+'</p></div>');}
+      $('p#text'+modul_id).append('<p class="text-info datesize">'+date+'</p><div><p class="default-0">'+sNumber+' &deg;C'+'</p></div>');}
       
    else if (sterowanie == 'odczyt cisnienie'){
       sNumber = wartosc.toString();
-      $('p#text'+modul_id).append('<p class="text-info datesize">'+date+'</p><div class="container"><p class="default-0">'+sNumber+'hPa'+'</p></div>');}
+      $('p#text'+modul_id).append('<p class="text-info datesize">'+date+'</p><div><p class="default-0">'+sNumber+' hPa'+'</p></div>');}
       
    else if (sterowanie == 'odczyt wilgotnosc'){
       sNumber = wartosc.toString();
-      $('p#text'+modul_id).append('<p class="text-info datesize">'+date+'</p><div class="container"><p class="default-0">'+sNumber+'%RH'+'</p></div>');}   
+      $('p#text'+modul_id).append('<p class="text-info datesize">'+date+'</p><div><p class="default-0">'+sNumber+' %RH'+'</p></div>');}
+
+   else if (sterowanie == 'odczyt co2'){
+      sNumber = wartosc.toString();
+      $('p#text'+modul_id).append('<p class="text-info datesize">'+date+'</p><div><p class="default-0">'+sNumber+' ppm'+'</p></div>');}
+
+   else if (sterowanie == 'odczyt pozar'){
+      sNumber = wartosc.toString();
+      if (wartosc == 1){
+            $('#pozar').addClass('flameicon');
+            //document.getElementById("datapozar").innerHTML = ""+date;
+            /*$('p#text'+modul_id).append('<p class="text-info datesize">'+date+'</p><div class="flame"></div>');*/}
+      if (wartosc == 0) {
+            $('#pozar').removeClass('flameicon');
+             //document.getElementById("datapozar").innerHTML = "";
+            }
+      }
+
+   else if (sterowanie == 'odczyt prad'){
+      nowaliczba = wartosc/100;
+      //console.log(nowaliczba);
+      //sNumber = wartosc.toString();
+      $('p#text'+modul_id).append('<p class="text-info datesize">'+date+'</p><div><p class="default-0">'+nowaliczba+' A'+'</p></div>');}   
    //output = [];
    //for (var i = 0, len = sNumber.length; i < len; i += 1) {
    //    output.push(+sNumber.charAt(i));
@@ -252,7 +296,7 @@ Object.size = function(obj) {
 };
 var ileUrzadzen = 0;
 
-function RGB(sterowanie,modul_id,rejestr,r,g,b){
+function RGB(sterowanie,modul_id,rejestr,r,g,b,date){
    
    
    
@@ -263,8 +307,8 @@ function RGB(sterowanie,modul_id,rejestr,r,g,b){
          g=0;
          b=0;
          }
-         
-      $('p#text'+modul_id).append('<div id="colorSelector" class="rgb'+modul_id+'"><div class="rgbi'+modul_id+'"style="background-color: rgb('+r+','+g+','+b+')" ></div></div>');
+      $('p#text'+modul_id).append('<a><p class="text-info datesize">'+date+'</p></a>');  
+      $('p#text'+modul_id).append('<div id="colorSelector" class="rgb'+modul_id+'"><div class="rgbi'+modul_id+rejestr+'"style="background-color: rgb('+r+','+g+','+b+')" ></div></div>');
        
    
       if (true){
@@ -287,7 +331,7 @@ function RGB(sterowanie,modul_id,rejestr,r,g,b){
             return false;
          },
          onChange: function (hsb, hex, rgb) {
-            $('.rgbi'+modul_id).css('backgroundColor', '#' + hex);
+            $('.rgbi'+modul_id+rejestr).css('backgroundColor', '#' + hex);
             if($.active > 0){ 
                getrequest.abort();
             }
@@ -329,18 +373,16 @@ function ajaxGet(){
       if($.active > 0){ 
       getrequest.abort();
    }
-   
+
    $.ajax(
          '/moduly',
    {
       method: "GET",
       dataType: "json",
-      success: function(data, status) {
-      alert(data.moduly);
-      return data.moduly;   
-      }
+  
    })
 }
+
 
 function wyslijAddress(){
    var address = $('#liczba_modulow').val();
@@ -351,3 +393,11 @@ function wyslijAddress(){
    ajaxPost(json);
    
 }
+
+
+   function handleData(data) {
+    
+  console.log(data)
+   }   
+
+
