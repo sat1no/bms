@@ -228,6 +228,14 @@
 .center{left:50%;margin-left:-10px;/*half of the .box width*/}
 .right{right:0;}
 
+.exception{
+	
+	font-size: 13px;
+	font-style: italic;
+	color: rgb(255,0,0);
+	float: right;
+}
+
 .flameicon{
 	position: absolute;
 

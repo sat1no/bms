@@ -49,7 +49,8 @@
 
 <input type='text' name='nazwa_modul' id='id_modul{{ modul.id }}' hidden='true' value='{{ modul.id }}'>
 <input type='text' name='nazwa' id='nazwa{{ modul.id }}' placeholder='nazwa' style="display: none">
-<input type='text' name='rejestr' id='rejestr{{ modul.id }}' placeholder='rejestr' style="display: none">
+<input type='number' name='rejestr' id='rejestr{{ modul.id }}' placeholder='rejestr' style="display: none">
+<input type='number' name='zakres' id='zakres{{ modul.id }}' placeholder='wartosc maks' style="display: none">
 <select id='sterowanie{{ modul.id }}' style="display: none">
   <option value='on/off'>ON/OFF</option>
   <option value='0-100%'>0-100%</option>
@@ -66,6 +67,7 @@
 <!--  <option value='odczyt CO2'>Stezenie CO2</option>-->
   <!--dodac opcje -->
 </select>
+
 <input type='submit' value='Dodaj urzadzenie' style="display: none" id='submit{{ modul.id }}'/>
 </form>
 

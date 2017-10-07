@@ -31,6 +31,12 @@ $(document).ready(function () {
          $('#rejestr'+data.moduly[i].id).toggle().val('');
          $('#submit'+data.moduly[i].id).toggle();
          $('#sterowanie'+data.moduly[i].id).toggle();
+         var foo
+         if (foo = $('#zakres'+data.moduly[i].id).css("display")){
+            
+            if (foo = "initial") $('#zakres'+data.moduly[i].id).css("display", "none")
+            
+         }
       });
    }
    
@@ -46,27 +52,28 @@ $(document).ready(function () {
          
    for(let i = 0; i < $('#liczba_modulow').val(); i++){
       
-
+      if ($('#sterowanie'+data.moduly[i].id).val() == '0-100%'){ $('#zakres'+data.moduly[i].id).toggle();}
+      alert($('#sterowanie'+data.moduly[i].id).val())
       
+      $('#sterowanie'+data.moduly[i].id).click(function (event) {
+            
+            if ($(this).val() == '0-100%') $('#zakres'+data.moduly[i].id).css("display", "initial")
+            else $('#zakres'+data.moduly[i].id).css("display", "none")
+            
+      })
+      //var card = document.getElementById("zakres"+data.moduly[i].id);
+      //if(card.selectedIndex == 1) {
+      //     alert('select one answer');
+      //}
+      //else {
+      //    var selectedText = card.options[card.selectedIndex].text;
+      //    alert(selectedText);
+      //}
       
      
       $('#post'+data.moduly[i].id).submit(function (event) {
          
-         //$.get("/moduly", function(data){
-         //   modul = data.moduly
-         //      var iloscUrzadzen = Object.size(modul[i+1].urzadzenia);
-         //      
-         //      for(var k = 0;k<iloscUrzadzen;k++){
-         //         var urzadzenie = modul[i+1].urzadzenia[k];
-         //         if (urzadzenie.rejestr == $("input#rejestr"+(i+1)).val()) alert('zajete')
-         //      }
-         //
-         //});
 
-         //alert(data);
-         
-         //$("input#rejestr"+(i+1)).val()
-         //$("input#nazwa"+(i+1)).val()
          
          $('input#rejestr'+(i+1)).css("background-color", "white")
          let nazwa = $("input#nazwa"+data.moduly[i].id).val();
@@ -80,12 +87,15 @@ $(document).ready(function () {
          let id_modul = $("input#id_modul"+data.moduly[i].id).val();
          
          let sterowanie = $("#sterowanie"+data.moduly[i].id).val();
+         let zakres = $("#zakres"+data.moduly[i].id).val();
          $('input#nazwa'+data.moduly[i].id).toggle();
          $('input#rejestr'+data.moduly[i].id).toggle();
          $('input#submit'+data.moduly[i].id).toggle();
          $('#sterowanie'+data.moduly[i].id).toggle();
+         $('#zakres'+data.moduly[i].id).css("display", "none");
+
          event.preventDefault();
-         let json = {nazwa: nazwa, rejestr:rejestr, id_modul:id_modul, sterowanie:sterowanie};
+         let json = {nazwa: nazwa, rejestr: rejestr, id_modul: id_modul, sterowanie: sterowanie, zakres: zakres};
          ajaxPost(json);
       });
    }
@@ -118,6 +128,9 @@ function update_task_table() {
             clear_text();
             var moduly = data.moduly;
             var date = data.date;
+
+            var substring = "Problem";
+            
             
 
             for(var i = 0;i<moduly.length;i++){
@@ -125,33 +138,44 @@ function update_task_table() {
                // Get the size of an object
                var iloscUrzadzen = Object.size(moduly[i].urzadzenia);
                var modul_id = moduly[i].id;
+
                for(var j = 0;j<iloscUrzadzen;j++){
                   
                   var urzadzenia = moduly[i].urzadzenia[j];
-                  if (urzadzenia.sterowanie !== 'odczyt pozar')$('p#text'+modul_id).append(urzadzenia.name+'<br>');
-/*                  $("#contentLoading").hide();
-                  $("#ready").hide();
-                  $("#contentLoading2").show()*/;
-                  if(urzadzenia.sterowanie == 'on/off')
-                  $('p#text'+modul_id).append('<a><p class="text-info datesize">'+date+'</p><div id="onoff'+modul_id+urzadzenia.id+'" class="on_off"></div></a>');
-                  if(urzadzenia.sterowanie == 'tylko do odczytu' || 'odczyt temperatura' || 'odczyt cisnienie' || 'odczyt wilgotnosc' || 'odczyt prad' || 'odczyt kontaktron' || 'odczyt PIR' || 'odczyt co2')
-                  valueChange(modul_id,urzadzenia.wartosc,date,urzadzenia.sterowanie);
-                  
-                  RGB(urzadzenia.sterowanie,modul_id,urzadzenia.rejestr,urzadzenia.r,urzadzenia.g,urzadzenia.b,date);
-                  if(urzadzenia.sterowanie == '0-100%') sliderChange('#bar'+modul_id+urzadzenia.id,urzadzenia.rejestr,modul_id,urzadzenia.id,urzadzenia.wartosc,date);
-                  // dodac kolejne mozliwosci sterowania
-                  
-                  
+                  var czywyjatek = urzadzenia.status;
+                  if (czywyjatek == null) czywyjatek = 0;
 
-                  if (urzadzenia.sterowanie !== 'odczyt pozar')$('p#text'+modul_id).append('<br><br><br>');
-                  togClasses('#onoff'+modul_id+urzadzenia.id,'on_off','on_off2', urzadzenia.rejestr, modul_id);
-                  if (urzadzenia.stan > 0){
-                     
-                     $('#onoff'+modul_id+urzadzenia.id).toggleClass('on_off');
-                     $('#onoff'+modul_id+urzadzenia.id).toggleClass('on_off2');
+                  if (urzadzenia.sterowanie !== 'odczyt pozar')$('p#text'+modul_id).append(urzadzenia.name+'<br>');
+                  if (czywyjatek.toString().indexOf(substring) != -1) $('p#text'+modul_id).append('<p class="exception">'+czywyjatek+'</p>');
+/*                 $("#contentLoading").hide();
+                  $("#ready").hide();
+                  $("#contentLoading2").show()*/
+                  
+                  console.log(czywyjatek.toString());
+                  if (czywyjatek.toString().indexOf(substring) == -1){
+                        if(urzadzenia.sterowanie == 'on/off')
+                        $('p#text'+modul_id).append('<a><p class="text-info datesize">'+date+'</p><div id="onoff'+modul_id+urzadzenia.id+'" class="on_off"></div></a>');
+                        if(urzadzenia.sterowanie == 'tylko do odczytu' || 'odczyt temperatura' || 'odczyt cisnienie' || 'odczyt wilgotnosc' || 'odczyt prad' || 'odczyt kontaktron' || 'odczyt PIR' || 'odczyt co2')
+                        valueChange(modul_id,urzadzenia.wartosc,date,urzadzenia.sterowanie);
+                        
+                        RGB(urzadzenia.sterowanie,modul_id,urzadzenia.rejestr,urzadzenia.r,urzadzenia.g,urzadzenia.b,date);
+                        if(urzadzenia.sterowanie == '0-100%') sliderChange('#bar'+modul_id+urzadzenia.id,urzadzenia.rejestr,modul_id,urzadzenia.id,urzadzenia.wartosc,date, urzadzenia.stan);
+                        // dodac kolejne mozliwosci sterowania
+                        
+                        
+      
+                        if (urzadzenia.sterowanie !== 'odczyt pozar')$('p#text'+modul_id).append('<br><br><br>');
+                        togClasses('#onoff'+modul_id+urzadzenia.id,'on_off','on_off2', urzadzenia.rejestr, modul_id);
+                        if (urzadzenia.stan > 0){
+                           
+                           $('#onoff'+modul_id+urzadzenia.id).toggleClass('on_off');
+                           $('#onoff'+modul_id+urzadzenia.id).toggleClass('on_off2');
                   }
                   
-               }                  
+               }
+               else $('p#text'+modul_id).append('<p class="text-info datesize">'+date+'</p><br><br><br>');
+               }
+               
                   
                }
 
@@ -265,20 +289,20 @@ function togClasses(id,class1,class2,rejestr,modul_id){
 
    }); 
 }
-function sliderChange(id,rejestr,modul_id,urzadzenia_id,urzadzenia_wartosc,date){
+function sliderChange(id,rejestr,modul_id,urzadzenia_id,urzadzenia_wartosc,date,urzadzenie_zakres){
    
 
 
-      $('p#text'+modul_id).append('<input class="slider" type="range" id="bar'+modul_id+urzadzenia_id+'" min="0" max="100" step="1" value="'+urzadzenia_wartosc+'">');
-      $('p#text'+modul_id).append('<div class="costam slider">'+urzadzenia_wartosc+'%</div>');
+      $('p#text'+modul_id).append('<input class="slider" type="range" id="bar'+modul_id+urzadzenia_id+'" min="0" max="'+urzadzenie_zakres+'" step="1" value="'+urzadzenia_wartosc+'">');
+      $('p#text'+modul_id).append('<div class="costam'+modul_id+urzadzenia_id+' slider">'+urzadzenia_wartosc/(urzadzenie_zakres/100)+'%</div>');
 
    $(id).bind('input change', function(event){  
       var value = $(this).val();
       if($.active > 0){ 
       getrequest.abort();
       }
-      $('.costam').empty();
-      $('.costam').append(value+'%');
+      $('.costam'+modul_id+urzadzenia_id).empty();
+      $('.costam'+modul_id+urzadzenia_id).append(value/(urzadzenie_zakres/100)+'%');
       value = parseInt(value);
       var json = {rejestr: rejestr, modul_id: modul_id, wartosc: value};
       ajaxPost(json);

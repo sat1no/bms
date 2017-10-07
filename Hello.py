@@ -7,7 +7,6 @@ from models import Moduly, Urzadzenia
 from __init__ import app, db
 from modbusmaster import writeRegister, readRegisters, writeMultipleRegisters
 from datetime import datetime
-import pytz
 from config import WARSAW
 
 
@@ -19,65 +18,44 @@ from config import WARSAW
 
 
 def zapisPoOdczycie(address, rejestrPoczatkowy, liczbaRejestrow):
-    a = readRegisters(address,rejestrPoczatkowy,liczbaRejestrow)
-    if a != -1:
+    
+    dane = readRegisters(address,rejestrPoczatkowy,liczbaRejestrow)
+    
+    if 'Problem' in dane:
+        return dane
+    
+    if dane != -1:
         urzadzenie = Urzadzenia.query.filter_by(modul_id = address, rejestr = rejestrPoczatkowy).first()
-        if len(a) == 1 and urzadzenie.sterowanie == "on/off":
-            urzadzenie.stan = a[0]
+        if len(dane) == 1 and urzadzenie.sterowanie == "on/off":
             
+            urzadzenie.stan = dane[0]
             db.session.commit()
-        # elif len(a) == 1 and urzadzenie.sterowanie == "tylko do odczytu":
-        #     urzadzenie.wartosc = a[0]
-        #     
-        #     db.session.commit()
-        # elif len(a) == 1 and urzadzenie.sterowanie == "odczyt cisnienie":
-        #     urzadzenie.wartosc = a[0]
-        #     
-        #     db.session.commit()
-        # elif len(a) == 1 and urzadzenie.sterowanie == "odczyt wilgotnosc":
-        #     urzadzenie.wartosc = a[0]
-        #     
-        #     db.session.commit()
-        elif len(a) == 1 and (urzadzenie.sterowanie == "odczyt temperatura" or "odczyt prad" or "odczyt wilgotnosc" or "odczyt cisnienie" or "tylko do odczytu" or "odczyt PIR"):
-            urzadzenie.wartosc = a[0]
+
+        elif len(dane) == 1 and (urzadzenie.sterowanie == "odczyt temperatura" or "odczyt prad" or "odczyt wilgotnosc" or "odczyt cisnienie" or "tylko do odczytu" or "odczyt PIR"):
             
+            urzadzenie.wartosc = dane[0]
             db.session.commit()
-        # elif len(a) == 1 and urzadzenie.sterowanie == "odczyt prad":
-        #     urzadzenie.wartosc = a[0]
+
+        # elif len(dane) == 2:
         #     
+        #     urzadzenie.stan = dane[0]
+        #     urzadzenie.wartosc = dane[1]
         #     db.session.commit()
-        elif len(a) == 2:
-            urzadzenie.stan = a[0]
-            urzadzenie.wartosc = a[1]
+            
+        elif len(dane) == 4:
+            
+            urzadzenie.stan = dane[0]
+            urzadzenie.r = dane[1]
+            urzadzenie.g = dane[2]
+            urzadzenie.b = dane[3]
             db.session.commit()
-        elif len(a) == 4:
-            urzadzenie.stan = a[0]
-            urzadzenie.r = a[1]
-            urzadzenie.g = a[2]
-            urzadzenie.b = a[3]
-            db.session.commit()
+            
         else:
+            
             return -1
         
-###### na tablicy       
-def prepare_for_json(modul):
-    nowy = dict()
-    nowy['name']=modul.name
-    nowy['value1']=modul.value1
-    nowy['urzadzenia']=[]
-    for i in range(len(modul.urzadzenia.all())):
-        nowy['urzadzenia'].append(modul.urzadzenia.all()[i].id)
-        nowy['urzadzenia'].append(modul.urzadzenia.all()[i].name)
-        nowy['urzadzenia'].append(modul.urzadzenia.all()[i].rejestr)
-        nowy['urzadzenia'].append(modul.urzadzenia.all()[i].sterowanie)
-        nowy['urzadzenia'].append(modul.urzadzenia.all()[i].wartosc)
-        nowy['urzadzenia'].append(modul.urzadzenia.all()[i].r)
-        nowy['urzadzenia'].append(modul.urzadzenia.all()[i].g)
-        nowy['urzadzenia'].append(modul.urzadzenia.all()[i].b)    
-    return nowy
-
-##### na slowniku
-def prepare_for_json3(_modul):
+        
+def prepare_for_json3(_modul, status):
     modul = dict()
     _urzadzenia = dict()
     for i in range(len(_modul.urzadzenia.all())):
@@ -90,13 +68,10 @@ def prepare_for_json3(_modul):
             'r': _modul.urzadzenia.all()[i].r,
             'g': _modul.urzadzenia.all()[i].g,
             'b': _modul.urzadzenia.all()[i].b,
-            'stan': _modul.urzadzenia.all()[i].stan
-            
-            
+            'stan': _modul.urzadzenia.all()[i].stan,
+            'status': status[i]
+                
         }
-            
-
-            
         
     modul['name']= _modul.name
     modul['urzadzenia'] = _urzadzenia
@@ -119,12 +94,6 @@ def index():
             return render_template('main.html', Moduly = Moduly.query.all(), Urzadzenia = Urzadzenia.query.all(),liczba_modulow = liczba_modulow)
     return redirect(url_for('login'))
 
-
-@app.route('/_add_numbers')
-def add_numbers():
-    a = request.args.get('a', 0, type=int)
-    b = request.args.get('b', 0, type=int)
-    return jsonify(result=a + b)
 
 
 #########################################################################################
@@ -149,17 +118,6 @@ def login():
     return render_template('login.html')
 
 
-@app.route('/login2', methods=['GET', 'POST'])
-def login2():
-    form = LoginForm()
-    if form.validate_on_submit():
-        flash('Login requested for OpenID="%s", remember_me=%s' %
-              (form.openid.data, str(form.remember_me.data)))
-        return redirect('/list')
-    return render_template('login2.html', 
-                           title='Sign In',
-                           form=form,
-                           providers=app.config['OPENID_PROVIDERS'])
 #########################################################################################
         ###########################DODAJMODUL#####################################
 #########################################################################################
@@ -190,66 +148,72 @@ def addrec():
         ###########################EDIT#####################################
 #########################################################################################
 
-@app.route('/editrec', methods = ['POST', 'GET'])
-def editrec():
-    
-    if request.method == "POST":        ## po wcisnieciu edit przy dowolnym module
-    
-        modulDoEdycji = request.form['id']      ## pobranie id wybranego modulu, id - nazwa pola hidden input
-                                                ## w list.html, ktory przechowuje id wybranego do edycji modulu
-        flash("%s" %modulDoEdycji)
-        edit = Moduly.query.filter_by(id = modulDoEdycji).first()  # pobranie instancji Moduly o podanym id
-        form = NewModuleForm()                                     # wybranie formy
-        # form['name'] = edit.name
-        flash(edit.name)
-        form.name.data = edit.name                              ## nadanie formie wartosci poczatkowych,
-        form.value1.data = edit.value1                          ## czyli tych ktore byly wczesniej w bazie
-        form.value2.data = edit.value2                          ## pod danym id
-        form.value3.data = edit.value3                          ##
-        
+# @app.route('/editrec', methods = ['POST', 'GET'])
+# def editrec():
+#     
+#     if request.method == "POST":        ## po wcisnieciu edit przy dowolnym module
+#     
+#         modulDoEdycji = request.form['id']      ## pobranie id wybranego modulu, id - nazwa pola hidden input
+#                                                 ## w list.html, ktory przechowuje id wybranego do edycji modulu
+#         flash("%s" %modulDoEdycji)
+#         edit = Moduly.query.filter_by(id = modulDoEdycji).first()  # pobranie instancji Moduly o podanym id
+#         form = NewModuleForm()                                     # wybranie formy
+#         # form['name'] = edit.name
+#         flash(edit.name)
+#         form.name.data = edit.name                              ## nadanie formie wartosci poczatkowych,
+#         form.value1.data = edit.value1                          ## czyli tych ktore byly wczesniej w bazie
+#         form.value2.data = edit.value2                          ## pod danym id
+#         form.value3.data = edit.value3                          ##
+#         
+# 
+#         
+#         return render_template('editmodule.html', edit = edit, form = form) ## edit- do przechowania id modulu
+#                                                                             ## form- forma do edycji danych
+# 
+#             
+#             
+#     return Response(status = 404)  ## jezeli request method = get
 
-        
-        return render_template('editmodule.html', edit = edit, form = form) ## edit- do przechowania id modulu
-                                                                            ## form- forma do edycji danych
+ #########################################################################################
+        ###########################ZAPIS#####################################
+#########################################################################################
 
-            
-            
-    return "jakis string"  ## jezeli request method = get
-@app.route('/save', methods = ['POST', 'GET'])
-def zapis():
-    form=NewModuleForm()
-    if request.method == 'POST' and form.validate_on_submit():
-
-        edit = Moduly.query.filter_by(id = request.form['address']).first() ## pobranie id do edycji
-                                                                            ## z editmodule.html i pobranie
-                                                                            ## modulu o danym id
-
-        if str(request.form['name']) != edit.name or\
-        int(request.form['value1']) != edit.value1 or\
-        int(request.form['value2']) != edit.value2 or\
-        int(request.form['value3']) != edit.value3:         ## jezeli ktores z pol formularza ulegnie zmianie
-
-            edit.name = request.form['name']                ## zapisanie nowych wartosci 
-            edit.value1 = request.form['value1']            ## z formularza do obiektu,
-            edit.value2 = request.form['value2']            ## ktory zostal wczesniej
-            edit.value3 = request.form['value3']            ## pobrany
-            db.session.commit()                             ## zapisanie do bazy
-            return redirect(url_for('list'))
-        return redirect(url_for('list'))
-    else:
-        edit = Moduly.query.filter_by(id = request.form['address']).first()
-        return render_template('editmodule.html',form = form, edit = edit)
+# @app.route('/save', methods = ['POST', 'GET'])
+# def zapis():
+#     form=NewModuleForm()
+#     if request.method == 'POST' and form.validate_on_submit():
+# 
+#         edit = Moduly.query.filter_by(id = request.form['address']).first() ## pobranie id do edycji
+#                                                                             ## z editmodule.html i pobranie
+#                                                                             ## modulu o danym id
+# 
+#         if str(request.form['name']) != edit.name or\
+#         int(request.form['value1']) != edit.value1 or\
+#         int(request.form['value2']) != edit.value2 or\
+#         int(request.form['value3']) != edit.value3:         ## jezeli ktores z pol formularza ulegnie zmianie
+# 
+#             edit.name = request.form['name']                ## zapisanie nowych wartosci 
+#             edit.value1 = request.form['value1']            ## z formularza do obiektu,
+#             edit.value2 = request.form['value2']            ## ktory zostal wczesniej
+#             edit.value3 = request.form['value3']            ## pobrany
+#             db.session.commit()                             ## zapisanie do bazy
+#             return redirect(url_for('list'))
+#         return redirect(url_for('list'))
+#     else:
+#         edit = Moduly.query.filter_by(id = request.form['address']).first()
+#         return render_template('editmodule.html',form = form, edit = edit)
         
  #########################################################################################
         ###########################LISTY#####################################
 #########################################################################################
          
-    
+#### URZADZENIA   
 @app.route('/list', methods = ['POST','GET'])
 def list():
 
     return render_template("list.html", Moduly = Moduly.query.all())
 
+#### MODULY
 @app.route('/list2', methods = ['POST','GET'])
 def list2():
 
@@ -263,7 +227,7 @@ def list2():
     
 @app.route('/logout')
 def logout():
-   # remove the username from the session if it is there
+
    session.pop('username', None)
    flash("Wylogowano","success")
    return redirect(url_for('index'))
@@ -271,7 +235,7 @@ def logout():
 
 #########################################################################################
 #########################################################################################
-        ###########################REST#####################################
+        ###########################PRAWIE REST#####################################
 #########################################################################################
 #########################################################################################
 
@@ -283,29 +247,38 @@ def logout():
 
 @app.route('/moduly', methods = ['GET'])
 def moduly_get():
-
+    
     all_modules = Moduly.query.all()
-    for i in range(len(all_modules)):
-        size = len(all_modules[i].urzadzenia.all())
-        for j in range(size):
-            urzadzenie = all_modules[i].urzadzenia.all()[j]
-            if urzadzenie.sterowanie == 'RGB':
-                zapisPoOdczycie(all_modules[i].id,urzadzenie.rejestr,4)
-            elif urzadzenie.sterowanie == '0-100%':
-                zapisPoOdczycie(all_modules[i].id,urzadzenie.rejestr,2)
-            else:
-                zapisPoOdczycie(all_modules[i].id,urzadzenie.rejestr,1)
 
+    status = [[0 for x in range(10)] for y in range(len(all_modules))] 
+
+    for i in range(len(all_modules)):
+        
+        size = len(all_modules[i].urzadzenia.all())
+        
+        for j in range(size):
+            
+            urzadzenie = all_modules[i].urzadzenia.all()[j]
+            
+            if urzadzenie.sterowanie == 'RGB':
+                status[i][j] = zapisPoOdczycie(all_modules[i].id,urzadzenie.rejestr,4)
+                print(status)
+
+            else:
+                status[i][j] = zapisPoOdczycie(all_modules[i].id,urzadzenie.rejestr,1)
+                print(status)
+
+    i = 0
     moduly = []
     date = datetime.now(tz=WARSAW).strftime('%Y-%m-%d %H:%M:%S')
     all_modules = Moduly.query.all()
     for modul in all_modules:
         
-        item = prepare_for_json3(modul)
+        item = prepare_for_json3(modul,status[i])
         moduly.append(item)
+        i+=1
         
-        
-    
+    i = 0
        
     return jsonify({'moduly': moduly, 'date': date})
 
@@ -326,6 +299,7 @@ def moduly_post():
         urzadzenie.rejestr = request.json['rejestr']
         urzadzenie.modul_id = request.json['id_modul']
         urzadzenie.sterowanie = request.json['sterowanie']
+        urzadzenie.stan = request.json['zakres']
 
         
         db.session.add(urzadzenie)
@@ -348,6 +322,7 @@ def moduly_post():
         if wyslij == 1:
             db.session.commit()
         
+        
 
     elif ('stan' in zadanie):
         urzadzenie = Urzadzenia.query.filter_by(modul_id = request.json['modul_id'], rejestr = request.json['rejestr']).first()
@@ -363,7 +338,7 @@ def moduly_post():
         urzadzenie.wartosc = request.json['wartosc']
         print urzadzenie.wartosc
         
-        wyslij = writeRegister(request.json['modul_id'],request.json['rejestr']+1,request.json['wartosc'])
+        wyslij = writeRegister(request.json['modul_id'],request.json['rejestr'],request.json['wartosc'])
         
         if wyslij == 1:
             db.session.commit()
@@ -373,7 +348,8 @@ def moduly_post():
         
         if wyslij == 1:
             print "dziala"
-
+    
+    
 
         
     return Response(status=200)
@@ -412,6 +388,7 @@ def scena():
 
 if __name__ == '__main__':
     db.create_all()
-    app.run(debug = True, host='10.7.0.235')  
+    app.run(debug = True, host='192.168.0.94')
+    #80.238.123.9
 
 
