@@ -388,7 +388,7 @@ def scena():
 
 if __name__ == '__main__':
     db.create_all()
-    app.run(debug = True, host='192.168.0.94')
+    app.run(debug = True, host='0.0.0.0')
     #80.238.123.9
 
 

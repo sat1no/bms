@@ -13,6 +13,8 @@ SQLALCHEMY_MIGRATE_REPO = os.path.join(basedir, 'db_repository')
 SIJAX_STATIC_PATH = path
 SIJAX_JSON_URI = '/static/js/sijax/json2.js'
 WARSAW = pytz.timezone('Europe/Warsaw')
+BAUDRATE = 38400
+PORT = '/dev/ttyAMA0'
 
 OPENID_PROVIDERS = [
     {'name': 'Google', 'url': 'https://www.google.com/accounts/o8/id'},

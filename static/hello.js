@@ -53,7 +53,7 @@ $(document).ready(function () {
    for(let i = 0; i < $('#liczba_modulow').val(); i++){
       
       if ($('#sterowanie'+data.moduly[i].id).val() == '0-100%'){ $('#zakres'+data.moduly[i].id).toggle();}
-      alert($('#sterowanie'+data.moduly[i].id).val())
+      
       
       $('#sterowanie'+data.moduly[i].id).click(function (event) {
             
@@ -185,7 +185,7 @@ function update_task_table() {
             complete: function (){
               
               
-              setTimeout(update_task_table, 1500);
+              setTimeout(update_task_table, 2000);
             
             }
          
@@ -294,7 +294,7 @@ function sliderChange(id,rejestr,modul_id,urzadzenia_id,urzadzenia_wartosc,date,
 
 
       $('p#text'+modul_id).append('<input class="slider" type="range" id="bar'+modul_id+urzadzenia_id+'" min="0" max="'+urzadzenie_zakres+'" step="1" value="'+urzadzenia_wartosc+'">');
-      $('p#text'+modul_id).append('<div class="costam'+modul_id+urzadzenia_id+' slider">'+urzadzenia_wartosc/(urzadzenie_zakres/100)+'%</div>');
+      $('p#text'+modul_id).append('<p class="text-info datesize">'+date+'</p><div class="costam'+modul_id+urzadzenia_id+' slider">'+urzadzenia_wartosc/(urzadzenie_zakres/100)+'%</div>');
 
    $(id).bind('input change', function(event){  
       var value = $(this).val();
