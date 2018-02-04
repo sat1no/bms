@@ -2,36 +2,42 @@
 <html>
    <head><link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M" crossorigin="anonymous"></head>
    <body>
-<title>My Application</title>
+<title>Login</title>
 
 {% with messages = get_flashed_messages(category_filter = ['success']) %}
       {% if messages %}
-        <ul>
+
         {% for message in messages %}
             <div class="alert alert-success" role="alert">
                <center>{{ message }}</center>
             </div>
         {% endfor %}
-        </ul>
+
       {% endif %}
 {% endwith %}
 {% with messages = get_flashed_messages(category_filter = ['warning']) %}
       {% if messages %}
-        <ul>
+       
         {% for message in messages %}
             <div class="alert alert-danger" role="alert">
                <center>{{ message }}</center>
             </div>
         {% endfor %}
-        </ul>
+       
       {% endif %}
 {% endwith %}
 
 <div class="row">
 <div class="container-fluid">
-<div class="col-6 col-md-2">
-      <h1>Logowanie</h1>
-      <form action = "" method = post>
+
+
+
+
+
+ 
+<center><h1>Logowanie</h1>
+
+  <form action = "" method = post>
          <dl>
             <dt>Login:</dt>
             
@@ -44,12 +50,8 @@
             <dt><input type = password name = password></dt>
          </dl>
          <p><input type = submit value = Login></p>
-      </form>
-</div>
-</div>
-  <div class="col-12 col-md-11">
-   
-  </div>
+  </form></center>
+
 
 </div>
 

@@ -42,6 +42,8 @@ class UrzadzeniaForm(Form):
 class NewModuleForm(Form):
    name = TextField('name', validators=[validators.DataRequired()])
    id = IntegerField('id')
-
+   
+class KameraForm(Form):
+   name = TextField('name', validators=[validators.DataRequired()])
 
    

@@ -2,7 +2,7 @@ from flask import   Flask, redirect, g, url_for, flash, \
                     request, render_template, make_response, session, abort, jsonify, Response
 import random, string, sqlite3, os, wtforms
 from werkzeug import secure_filename
-from forms import ContactForm, LoginForm, NewModuleForm, UrzadzeniaForm
+from forms import ContactForm, LoginForm, NewModuleForm, UrzadzeniaForm, KameraForm
 from models import Moduly, Urzadzenia
 from __init__ import app, db
 from modbusmaster import writeRegister, readRegisters, writeMultipleRegisters
@@ -112,7 +112,7 @@ def login():
             
             return redirect(url_for('index'))
         else:
-            flash("Zly login lub haslo", "warning")
+            flash("Niepoprawny login lub haslo", "warning")
             return render_template('login.html')
         
     return render_template('login.html')
@@ -143,6 +143,25 @@ def addrec():
             return redirect(url_for('addrec'))
     elif request.method == 'GET': ## Po wejsciu przyciskiem z list.html
         return render_template('newmodule.html', form = form) ## Przeslanie formy do newmodule.html
+      
+ #########################################################################################
+        ###########################KAMERA#####################################
+#########################################################################################     
+@app.route('/kamera',methods = ['POST', 'GET'])
+def kamera():
+
+   if request.method == 'POST':    ## Po kliknieciu submit w newmodule.html
+      
+      zmienna = request.form['ip']
+      liczba_modulow = len(Moduly.query.all())
+      return render_template('main.html', kamera = zmienna, Moduly = Moduly.query.all(), Urzadzenia = Urzadzenia.query.all(),liczba_modulow = liczba_modulow)
+
+      kamera = request.form['ip']
+      flash(kamera)
+      flash('record successfully added')
+      return render_template('main.html', kamera = kamera)
+   elif request.method == 'GET': ## Po wejsciu przyciskiem z list.html
+      return render_template('kamera.html')
     
  #########################################################################################
         ###########################EDIT#####################################

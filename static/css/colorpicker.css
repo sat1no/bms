@@ -332,7 +332,7 @@ img {
 
 .ul {
     list-style-type: none;
-    margin: 0;
+    margin: -10px;
     padding: 0;
     width: 25%;
     background-color: rgb(33,37,41);

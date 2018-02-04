@@ -43,6 +43,7 @@
     </p>
   </div>
 </div>
+
 </h5>
 <form action = '/' method= 'POST' id='post{{ modul.id }}'>
 <input type='text' name='liczba_modulow' id='liczba_modulow' hidden='true' value='{{ liczba_modulow }}'>
@@ -52,33 +53,35 @@
 <input type='number' name='rejestr' id='rejestr{{ modul.id }}' placeholder='rejestr' style="display: none">
 <input type='number' name='zakres' id='zakres{{ modul.id }}' placeholder='wartosc maks' style="display: none">
 <select id='sterowanie{{ modul.id }}' style="display: none">
-  <option value='on/off'>ON/OFF</option>
-  <option value='0-100%'>0-100%</option>
+  <option value='on/off'>Wyłącznik</option>
+  <option value='0-100%'>Ściemniacz</option>
   <option value='RGB'>RGB</option>
-  <option value='tylko do odczytu'>Tylko do odczytu</option>
+  <!--<option value='tylko do odczytu'>Tylko do odczytu</option>-->
   <option value='odczyt temperatura'>Odczyt temperatura</option>
-  <option value='odczyt cisnienie'>Odczyt cisnienie</option>
-  <option value='odczyt wilgotnosc'>Odczyt wilgotnosc</option>
+  <option value='odczyt cisnienie'>Odczyt ciśnienie</option>
+  <option value='odczyt wilgotnosc'>Odczyt wilgotność</option>
+  <option value='odczyt co2'><p>Odczyt CO<sub>2</sub></p></option>
   <option value='odczyt PIR'>PIR</option>
   <option value='odczyt kontaktron'>Kontaktron</option>
-  <option value='odczyt prad'>Odczyt prąd</option>
-  <option value='odczyt co2'><p>Odczyt CO<sub>2</sub></p></option>
-  <option value='odczyt pozar'>Pozar</option>
+  <!--<option value='odczyt prad'>Odczyt prąd</option>-->
+  
+  <!--<option value='odczyt pozar'>Pozar</option>-->
 <!--  <option value='odczyt CO2'>Stezenie CO2</option>-->
   <!--dodac opcje -->
 </select>
 
-<input type='submit' value='Dodaj urzadzenie' style="display: none" id='submit{{ modul.id }}'/>
+<input type='submit' value='Dodaj urządzenie' style="display: none" id='submit{{ modul.id }}'/>
 </form>
 
 {% endfor %}
 
          <center>
    <a href="/addrec">
-           <button id="dodajmodul" class="btn btn-info btn-block main" onclick="wyslijAddress()">Dodaj modul</button>
+           <button id="dodajmodul" class="btn btn-info btn-block main" onclick="wyslijAddress()">Dodaj moduł</button>
    </a>
          </center>
 {% endblock %}
+
 {% block scripts %}
 
 <script src="{{url_for('static', filename='hello.js')}}"></script>

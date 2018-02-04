@@ -94,22 +94,10 @@ def readRegisters(modul_id,rejestr, liczbaRejestrow, *args, **kwargs):
         master.set_timeout(0.1)
         master.set_verbose(True)
         
-        
-        
-        #logger.info(master.execute(1, cst.READ_HOLDING_REGISTERS, 100, 4))
+
         dane = master.execute(modul_id, cst.READ_HOLDING_REGISTERS, rejestr, liczbaRejestrow)
         
-        
-        #send some queries
-        #logger.info(master.execute(1, cst.READ_COILS, 0, 10))
-        #logger.info(master.execute(1, cst.READ_DISCRETE_INPUTS, 0, 8))
-        #logger.info(master.execute(1, cst.READ_INPUT_REGISTERS, 100, 3))
-        #logger.info(a)
-        #logger.info(master.execute(1, cst.WRITE_SINGLE_COIL, 7, output_value=1))
-        #logger.info(master.execute(modul_id, cst.WRITE_SINGLE_REGISTER, rejestr, output_value=wartoscLubStan))
-        #logger.info(master.execute(1, cst.WRITE_MULTIPLE_COILS, 0, output_value=[1, 1, 0, 1, 1, 0, 1, 1]))
-        #logger.info(master.execute(1, cst.WRITE_MULTIPLE_REGISTERS, 100, output_value=xrange(12)))
-        
+   
     except (modbus_tk.exceptions.ModbusInvalidResponseError, modbus_tk.modbus.ModbusError) as e:
 	code = ''
         if 'Response' in "%s" % e:
@@ -120,7 +108,7 @@ def readRegisters(modul_id,rejestr, liczbaRejestrow, *args, **kwargs):
         elif 'code' in "%s" % e:
             
             code = "Problem z komunikacją: kod błędu 2"
-	    return code
+            return code
 
         return code
         

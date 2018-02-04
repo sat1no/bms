@@ -21,12 +21,11 @@
 
 <title>BMS</title>
 <div class="row">
-   <div class=col>
+   <div class="col">
 
    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-navbar">
-  <nav class="navbar bg-light">
-  <span class="h2" style="color: black">BMS</span>
-   </nav>
+
+  <img src="../static/images/wat.gif" style="width:36px;height:50px;">>
   <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
@@ -34,33 +33,24 @@
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
       <li class="nav-item active">
-        <a class="nav-link btn-outline-info" href="/">Home <span class="sr-only">(current)</span></a>
+        <a class="nav-link btn-outline-info" href="/">Strona glówna <span class="sr-only">(current)</span></a>
       </li>
 
       <li class="nav-item active">
-         <a class="nav-link btn-outline-info" href="/list">Urzadzenia</a>
+         <a class="nav-link btn-outline-info" href="/list">Urządzenia</a>
       </li>
       <li class="nav-item active">
-         <a class="nav-link btn-outline-info" href="/list2">Moduly</a>
-      </li>
-      <li>
-         <a style="visibility: hidden">eh</a>
+         <a class="nav-link btn-outline-info" href="/list2">Moduły</a>
       </li>
       <li class="nav-item active">
-         <div id="alerts"><div class="left" id="pozar"></div><!--<p id='datapozar' class='text-info datesize'></p>--></div>
+         <a class="nav-link btn-outline-info" href="/kamera">Kamera</a>
       </li>
-<!--
-      <li class="nav-item active">
-         <a class="nav-link btn-outline-info" href="/sceny">Scena</a>
-      </li> -->
+
+
       <li class="nav-item active right">
-         <a class="nav-link pull-right btn-outline-info" href="/logout">Logout</a>
+         <a class="nav-link pull-right btn-outline-info" href="/logout">Wyloguj</a>
       </li>
     </ul>
-<!--    <form class="form-inline my-2 my-lg-0">
-      <input class="form-control mr-sm-2" type="text" placeholder="Search" aria-label="Search">
-      <button class="btn btn-outline-success my-2 my-sm-0" type="submit">Search</button>
-    </form>-->
   </div>
 </nav>
 
@@ -71,7 +61,7 @@
 </div>
 </div>
 
-<div class="row alert-success">
+<!--<div class="row alert-success">
 <div class="col">
 {% with messages = get_flashed_messages(category_filter = ['success']) %}
       {% if messages %}
@@ -98,7 +88,7 @@
         </ul>
       {% endif %}
 {% endwith %}
-</div>
+</div>-->
 <!--<div class="container">-->
 
 
@@ -107,33 +97,21 @@
 
 <div class="col-3">
 
-
-<ul id="list-example" class="ul">
-<img class="kamerka" src="http://192.168.0.31:8081">
-
-{% block lista %}{% endblock %}
-<!--{% for modul in Moduly %}
-<li class="li">
-   <a href="#a{{ modul.id }}">
-      {{ modul.name }}
-   </a>
-</li>
-{% endfor %}-->
-
-</ul>
-
+  <ul id="list-example" class="ul">
+    <img class="kamerka" src="http://{{ kamera }}">
+      {% block lista %}{% endblock %}
+  </ul>
 
 </div>
 
-  <div class="col-9 main">
+<div class="col-9 main">
 
   {% block body %}{% endblock %}
 
-  </div>
+</div>
 
 </div>
-<!--</div>
--->
+
 
 
       <script src="{{url_for('static', filename='js/jquery-3.2.1.min.js')}}"></script>
